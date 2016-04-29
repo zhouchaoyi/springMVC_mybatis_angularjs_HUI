@@ -1,7 +1,7 @@
 # 忽略intellij 自动生成的文件
-src/target/
-src/.idea/
-src/demo.iml
+target/
+.idea/
+admin.iml
 
 *.class
 
