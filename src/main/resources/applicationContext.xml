@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+                          http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+                          http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                          http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="com.dawn.bgSys" />
+
+    <!-- 定义受环境影响易变的变量 -->
+    <bean
+            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath*:/properties/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+   <!-- 数据源配置 -->
+   <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+         init-method="init" destroy-method="close">
+          <!-- 驱动名称 -->
+          <property name="DriverClassName" value="${jdbc.driver}" />
+          <!-- JDBC连接串 -->
+          <property name="url"
+                    value="${jdbc.url}" />
+          <!-- 数据库用户名称 -->
+          <property name="username" value="${jdbc.username}" />
+          <!-- 数据库密码 -->
+          <property name="password" value="${jdbc.password}" />
+          <!-- 连接池最大使用连接数量 -->
+          <property name="maxActive" value="${jdbc.maxActive}" />
+          <!-- 初始化大小 -->
+          <property name="initialSize" value="${jdbc.initialSize}" />
+          <!-- 获取连接最大等待时间 -->
+          <property name="maxWait" value="${jdbc.maxWait}" />
+          <!-- 连接池最小空闲 -->
+          <property name="minIdle" value="${jdbc.minIdle}" />
+          <!-- 逐出连接的检测时间间隔 -->
+          <property name="timeBetweenEvictionRunsMillis" value="3000" />
+          <!-- 最小逐出时间 -->
+          <property name="minEvictableIdleTimeMillis" value="300000" />
+          <!-- 测试有效用的SQL Query -->
+          <property name="validationQuery" value="SELECT 'x'" />
+          <!-- 连接空闲时测试是否有效 -->
+          <property name="testWhileIdle" value="true" />
+          <!-- 获取连接时测试是否有效 -->
+          <property name="testOnBorrow" value="false" />
+          <!-- 归还连接时是否测试有效 -->
+          <property name="testOnReturn" value="false" />
+   </bean>
+
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:com/dawn/bgSys/mapping/*.xml"></property>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                            offsetAsPageNum=true
+                            rowBoundsWithCount=true
+                            pageSizeZero=true
+                            reasonable=false
+                            returnPageInfo=none
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dawn.bgSys.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <context:annotation-config/>
+
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:ehcache.xml"/>
+    </bean>
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+        <property name="cacheManager" ref="ehcacheManager"/>
+        <property name="transactionAware" value="true"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../../lib/html5.js"></script>
+<script type="text/javascript" src="../../lib/respond.min.js"></script>
+<script type="text/javascript" src="../../lib/PIE_IE678.js"></script>
+<![endif]-->
+<link href="../../css/H-ui.min.css" rel="stylesheet" type="text/css" />
+<link href="../../css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+<link href="../../lib/Hui-iconfont/1.0.7/iconfont.css" rel="stylesheet" type="text/css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="http://lib.h-ui.net/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>管理员属性编辑</title>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+<div class="pd-20">
+	<form class="form form-horizontal" id="form-admin-add">
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>登录名：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.loginName" class="input-text" value="" placeholder="" id="login-name" name="user-name" datatype="*1-100" nullmsg="登录名不能为空">
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>密码：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.loginPassword" placeholder="" autocomplete="off" value="" class="input-text" datatype="*1-100" nullmsg="密码不能为空" name="newpassword">
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>用户名：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.userName" class="input-text" value="" placeholder="" id="user-name" name="user-name" datatype="*1-100" nullmsg="用户名不能为空">
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3">证件名称：</label>
+			<div class="formControls col-5"> <span class="select-box" style="width:150px;">
+				<select  class="select" ng-model="model.idCardType"
+						 ng-options="m.value as m.label for m in options.idCardType">
+				</select>
+				</span> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3">证件号码：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.idCard" class="input-text" value="" placeholder="" id="login-name3" name="user-name" >
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>性别：</label>
+			<div class="formControls col-5">
+				<div class="radio-box">
+					<input type="radio" id="sex-1" name="sex" value="0" ng-model="model.sex" datatype="*" nullmsg="请选择性别！">
+					<label for="sex-1">男</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="sex-2" name="sex" value="1" ng-model="model.sex">
+					<label for="sex-2">女</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3">公共账户：</label>
+			<div class="formControls col-5 ">
+				<div class="check-box">
+					<input type="checkbox" ng-model="model.publicAccount" id="public"  >
+					<label for="public">设为系统公共账户，允许重复登录</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-3">状态：</label>
+			<div class="formControls col-5 ">
+				<div class="check-box">
+					<input type="checkbox" ng-model="model.status" id="status-1"  >
+					<label for="status-1">帐户可用</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+
+		<div class="row cl">
+			<div class="col-9 col-offset-3">
+				<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
+			</div>
+		</div>
+	</form>
+</div>
+<script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../lib/Validform/5.3.2/Validform.min.js"></script>
+<script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="../../lib/angular.min.js"></script>
+<script type="text/javascript" src="../../js/H-ui.js"></script>
+<script type="text/javascript" src="../../js/H-ui.admin.js"></script>
+<script type="text/javascript" src="../../js/app.js"></script>
+<script type="text/javascript" src="../../js/user/admin.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#form-admin-add").Validform({
+		tiptype:2,
+		callback:function(form){
+			var appElement = document.querySelector('[ng-controller=myCtrl]');
+			var $scope = angular.element(appElement).scope();
+			$scope.submitForm();
+//			var index = parent.layer.getFrameIndex(window.name);
+//			parent.$('.btn-refresh').click();
+//			parent.layer.close(index);
+		}
+	});
+});
+</script>
+</body>
+</html>

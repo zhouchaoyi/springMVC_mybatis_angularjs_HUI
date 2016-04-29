@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IUserDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.User" >
+    <id column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="registed_date" property="registedDate" jdbcType="TIMESTAMP" />
+    <result column="login_password" property="loginPassword" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="VARCHAR" />
+    <result column="third_part_id" property="thirdPartId" jdbcType="VARCHAR" />
+    <result column="last_login" property="lastLogin" jdbcType="TIMESTAMP" />
+    <result column="last_logout" property="lastLogout" jdbcType="TIMESTAMP" />
+    <result column="login_flag" property="loginFlag" jdbcType="VARCHAR" />
+    <result column="public_account" property="publicAccount" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="search_txt" property="searchTxt" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="BIGINT" />
+    <result column="department_id" property="departmentId" jdbcType="BIGINT" />
+    <result column="user_score" property="userScore" jdbcType="DOUBLE" />
+    <result column="total_user_score" property="totalUserScore" jdbcType="DOUBLE" />
+    <result column="user_day" property="userDay" jdbcType="BIGINT" />
+    <result column="login_date" property="loginDate" jdbcType="TIMESTAMP" />
+    <result column="sign_date" property="signDate" jdbcType="TIMESTAMP" />
+    <result column="id_card_type" property="idCardType" jdbcType="BIGINT" />
+    <result column="theme_index" property="themeIndex" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, login_name, user_name, registed_date, login_password, user_type, third_part_id, 
+    last_login, last_logout, login_flag, public_account, status, search_txt, sex, department_id, 
+    user_score, total_user_score, user_day, login_date, sign_date, id_card_type, theme_index, 
+    id_card
+  </sql>
+  <sql id="List_Without_Password" >
+    user_id, login_name, user_name, registed_date, user_type, third_part_id,
+    last_login, last_logout, login_flag, public_account, status, search_txt, sex, department_id,
+    user_score, total_user_score, user_day, login_date, sign_date, id_card_type, theme_index,
+    id_card
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByUserType" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from user_info
+    where user_type = #{userType} and (user_name like #{searchStr} or login_name like #{searchStr})
+  </select>
+
+  <delete id="deleteByPrimaryKey" >
+    delete from user_info
+    where user_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.User" >
+    insert into user_info (login_name, user_name,
+      registed_date, login_password, user_type, 
+      third_part_id, last_login, last_logout, 
+      login_flag, public_account, status, 
+      search_txt, sex, department_id, 
+      user_score, total_user_score, user_day, 
+      login_date, sign_date, id_card_type, 
+      theme_index, id_card)
+    values (#{loginName,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+      #{registedDate,jdbcType=TIMESTAMP}, #{loginPassword,jdbcType=VARCHAR}, #{userType,jdbcType=VARCHAR}, 
+      #{thirdPartId,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP}, #{lastLogout,jdbcType=TIMESTAMP}, 
+      #{loginFlag,jdbcType=VARCHAR}, #{publicAccount,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{searchTxt,jdbcType=VARCHAR}, #{sex,jdbcType=BIGINT}, #{departmentId,jdbcType=BIGINT}, 
+      #{userScore,jdbcType=DOUBLE}, #{totalUserScore,jdbcType=DOUBLE}, #{userDay,jdbcType=BIGINT}, 
+      #{loginDate,jdbcType=TIMESTAMP}, #{signDate,jdbcType=TIMESTAMP}, #{idCardType,jdbcType=BIGINT}, 
+      #{themeIndex,jdbcType=VARCHAR}, #{idCard,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.User" >
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="loginName != null" >
+        login_name,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="registedDate != null" >
+        registed_date,
+      </if>
+      <if test="loginPassword != null" >
+        login_password,
+      </if>
+      <if test="userType != null" >
+        user_type,
+      </if>
+      <if test="thirdPartId != null" >
+        third_part_id,
+      </if>
+      <if test="lastLogin != null" >
+        last_login,
+      </if>
+      <if test="lastLogout != null" >
+        last_logout,
+      </if>
+      <if test="loginFlag != null" >
+        login_flag,
+      </if>
+      <if test="publicAccount != null" >
+        public_account,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="searchTxt != null" >
+        search_txt,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="userScore != null" >
+        user_score,
+      </if>
+      <if test="totalUserScore != null" >
+        total_user_score,
+      </if>
+      <if test="userDay != null" >
+        user_day,
+      </if>
+      <if test="loginDate != null" >
+        login_date,
+      </if>
+      <if test="signDate != null" >
+        sign_date,
+      </if>
+      <if test="idCardType != null" >
+        id_card_type,
+      </if>
+      <if test="themeIndex != null" >
+        theme_index,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="loginName != null" >
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="registedDate != null" >
+        #{registedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginPassword != null" >
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartId != null" >
+        #{thirdPartId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLogin != null" >
+        #{lastLogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastLogout != null" >
+        #{lastLogout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginFlag != null" >
+        #{loginFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="publicAccount != null" >
+        #{publicAccount,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="searchTxt != null" >
+        #{searchTxt,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=BIGINT},
+      </if>
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="userScore != null" >
+        #{userScore,jdbcType=DOUBLE},
+      </if>
+      <if test="totalUserScore != null" >
+        #{totalUserScore,jdbcType=DOUBLE},
+      </if>
+      <if test="userDay != null" >
+        #{userDay,jdbcType=BIGINT},
+      </if>
+      <if test="loginDate != null" >
+        #{loginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="signDate != null" >
+        #{signDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idCardType != null" >
+        #{idCardType,jdbcType=BIGINT},
+      </if>
+      <if test="themeIndex != null" >
+        #{themeIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.User" >
+    update user_info
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="registedDate != null" >
+        registed_date = #{registedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginPassword != null" >
+        login_password = #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartId != null" >
+        third_part_id = #{thirdPartId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLogin != null" >
+        last_login = #{lastLogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastLogout != null" >
+        last_logout = #{lastLogout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginFlag != null" >
+        login_flag = #{loginFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="publicAccount != null" >
+        public_account = #{publicAccount,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="searchTxt != null" >
+        search_txt = #{searchTxt,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=BIGINT},
+      </if>
+      <if test="departmentId != null" >
+        department_id = #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="userScore != null" >
+        user_score = #{userScore,jdbcType=DOUBLE},
+      </if>
+      <if test="totalUserScore != null" >
+        total_user_score = #{totalUserScore,jdbcType=DOUBLE},
+      </if>
+      <if test="userDay != null" >
+        user_day = #{userDay,jdbcType=BIGINT},
+      </if>
+      <if test="loginDate != null" >
+        login_date = #{loginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="signDate != null" >
+        sign_date = #{signDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idCardType != null" >
+        id_card_type = #{idCardType,jdbcType=BIGINT},
+      </if>
+      <if test="themeIndex != null" >
+        theme_index = #{themeIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.User" >
+    update user_info
+    set login_name = #{loginName,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      registed_date = #{registedDate,jdbcType=TIMESTAMP},
+      login_password = #{loginPassword,jdbcType=VARCHAR},
+      user_type = #{userType,jdbcType=VARCHAR},
+      third_part_id = #{thirdPartId,jdbcType=VARCHAR},
+      last_login = #{lastLogin,jdbcType=TIMESTAMP},
+      last_logout = #{lastLogout,jdbcType=TIMESTAMP},
+      login_flag = #{loginFlag,jdbcType=VARCHAR},
+      public_account = #{publicAccount,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      search_txt = #{searchTxt,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=BIGINT},
+      department_id = #{departmentId,jdbcType=BIGINT},
+      user_score = #{userScore,jdbcType=DOUBLE},
+      total_user_score = #{totalUserScore,jdbcType=DOUBLE},
+      user_day = #{userDay,jdbcType=BIGINT},
+      login_date = #{loginDate,jdbcType=TIMESTAMP},
+      sign_date = #{signDate,jdbcType=TIMESTAMP},
+      id_card_type = #{idCardType,jdbcType=BIGINT},
+      theme_index = #{themeIndex,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+</mapper>
