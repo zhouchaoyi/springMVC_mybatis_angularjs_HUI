@@ -15,6 +15,13 @@
     <context:component-scan base-package="com.dawn.bgSys.controller" />
     <mvc:annotation-driven/>
 
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**" />-->
+            <!--<bean id="loginInterceptor" class="com.dawn.bgSys.interceptor.LoginInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+
     <!-- 静态资源的访问 -->
     <mvc:default-servlet-handler/>
 

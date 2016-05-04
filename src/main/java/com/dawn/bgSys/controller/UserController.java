@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +35,21 @@ public class UserController extends BaseController {
     @Autowired
     private IUserService userService;
 
+
+    @RequestMapping(value = "/login", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String login(@RequestBody String jsonStr) throws Exception {
+
+        String loginName = WebJsonUtils.getStringValue(jsonStr, "loginName", true);
+        String password = WebJsonUtils.getStringValue(jsonStr, "password", true);
+
+        JSONObject result = this.userService.queryUserByNameAndPass(loginName,password);
+
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
 
     /**
      * 根据Id获取用户类型

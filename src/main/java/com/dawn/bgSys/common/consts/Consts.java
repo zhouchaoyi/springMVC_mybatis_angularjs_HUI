@@ -64,9 +64,9 @@ public class Consts {
     public static final String SR_SESSIONTIMEOUT = "SR_SESSIONTIMEOUT";
 
     /**
-     *  session超时异常错误码
+     *  token异常错误码
      */
-    public static final String SESSIONTIMEOUT_ERROR_CODE = "111111";
+    public static final String TOKEN_ERROR_CODE = "000002";
 
     /**
      *  普通异常错误码

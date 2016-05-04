@@ -6,6 +6,24 @@ var app = angular.module("myApp",[]).config(function($httpProvider) {
     $httpProvider.defaults.headers
         .common['Accept'] = 'application/json; charset=utf-8';
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
+    $httpProvider.defaults.transformRequest = [function(data) {
+        if(null!=localStorage.getItem("token")) {
+            data.token=localStorage.getItem("token");
+        }
+        var jsonStr=JSON.stringify(data);
+        return jsonStr;
+    }];
+    $httpProvider.defaults.transformResponse = [function(data) {
+        var json = JSON.parse(data);
+        if(json.status.errorCode=="000001") {
+            alert(json.status.errorMsg);
+            return null;
+        }else if(json.status.errorCode=="000002") {
+            alert(json.status.errorMsg);
+            top.location.href=loginUrl;
+        }
+        return json;
+    }];
 
 });
 
@@ -27,19 +45,25 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     $scope.currentPage=1;
     $scope.pageSize=10;
     $scope.pages=1;
-    $scope.noRecord=false;
+    $scope.gridPrompt=true;
+    $scope.gridPromptTxt="数据加载中......";
     $scope.listItems=function() {
+        $scope.gridPrompt=true;
+        $scope.gridPromptTxt="数据加载中......";
         $scope.param.currentPage=$scope.currentPage;
         $scope.param.pageSize=$scope.pageSize;
         $scope.param.orderBy=$scope.orderBy;
         $scope.param.searchStr=$scope.searchStr;
-        var jsonStr=JSON.stringify($scope.param);
-        BusinessService.post(myRootUrl+$scope.listUrl ,jsonStr).success(function (data) {
+        BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
             //console.log(data);
+            if(null==data) {
+                return;
+            }
             if(data.data.total>0) {
-                $scope.noRecord = false;
+                $scope.gridPrompt = false;
             }else {
-                $scope.noRecord = true;
+                $scope.gridPrompt = true;
+                $scope.gridPromptTxt="没有符合条件的记录";
             }
             $scope.items = data.data.items;
             for (var i = 0; i < $scope.items.length; i++) {
@@ -81,13 +105,13 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     $scope.param={};
     $scope.param.userType="admin";
     $scope.orderBy="userId,-1";
-    $scope.listUrl="/userMgmt/listUserByType";
+    $scope.listUrl="/userMgmt/listUserByType.do";
 
     //表单页属性
-    $scope.insertUrl="/userMgmt/addUser";
-    $scope.updateUrl="/userMgmt/updateUser";
-    $scope.queryUrl="/userMgmt/queryUserById";
-    $scope.deleteUrl="/userMgmt/deleteUser";
+    $scope.insertUrl="/userMgmt/addUser.do";
+    $scope.updateUrl="/userMgmt/updateUser.do";
+    $scope.queryUrl="/userMgmt/queryUserById.do";
+    $scope.deleteUrl="/userMgmt/deleteUser.do";
     $scope.mainKey="userId"; //删除方法需要用到,表示根据哪个字段来删除
     $scope.model={};
     $scope.model.id=getQueryString("id");
@@ -119,8 +143,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     $scope.queryModelById=function() {
         var param={};
         param.id=$scope.model.id;
-        var jsonStr=JSON.stringify(param);
-        BusinessService.post(myRootUrl+$scope.queryUrl ,jsonStr).success(function (data) {
+        BusinessService.post(myRootUrl+$scope.queryUrl ,param).success(function (data) {
             //console.log(data.data);
             $scope.model.loginName = data.data.loginName;
             $scope.model.loginPassword = data.data.loginPassword;
@@ -140,29 +163,28 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     }
 
     $scope.submitForm=function() {
-        var jsonStr=JSON.stringify($scope.model);
         //console.log(jsonStr);
         if(null!=$scope.model.id&&$scope.model.id.length>0) {
-            BusinessService.post(myRootUrl + $scope.updateUrl, jsonStr).success(function (data) {
+            BusinessService.post(myRootUrl + $scope.updateUrl, $scope.model).success(function (data) {
+                if(null==data) {
+                    return;
+                }
                 if (data.data == 1) {
                     parent.window.location.href = parent.window.location.href;
                 }
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
-                if(data==null) {
-                    parent.window.location.href = parent.window.location.href;
-                }
             });
         }else {
-            BusinessService.post(myRootUrl + $scope.insertUrl, jsonStr).success(function (data) {
+            BusinessService.post(myRootUrl + $scope.insertUrl, $scope.model).success(function (data) {
+                if(null==data) {
+                    return;
+                }
                 if (data.data == 1) {
                     parent.window.location.href = parent.window.location.href;
                 }
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
-                if(data==null) {
-                    parent.window.location.href = parent.window.location.href;
-                }
             });
         }
 
@@ -199,9 +221,8 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }
         if(confirm("删除须谨慎，确认要删除吗？")) {
             var param={"ids":ids};
-            var jsonStr=JSON.stringify(param);
             //console.log("jsonStr="+jsonStr);
-            BusinessService.post(myRootUrl + $scope.deleteUrl, jsonStr).success(function (data) {
+            BusinessService.post(myRootUrl + $scope.deleteUrl, param).success(function (data) {
                 if (data.data > 0) {
                     alert("删除成功");
                     $scope.listItems();

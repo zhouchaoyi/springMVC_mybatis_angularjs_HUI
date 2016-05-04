@@ -32,7 +32,7 @@ public class PropertiesUtil {
      */
     public PropertiesUtil(String propertiesName) {
         try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource(propertiesName);
+            URL url = Thread.currentThread().getContextClassLoader().getResource("/properties/"+propertiesName);
             if (url == null) {
                 throw new OperateFailureException("读取配置文件出错!");
             }

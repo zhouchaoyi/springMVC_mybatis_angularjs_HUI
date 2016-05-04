@@ -6,7 +6,24 @@ var app = angular.module("userApp",[]).config(function($httpProvider) {
     $httpProvider.defaults.headers
         .common['Accept'] = 'application/json; charset=utf-8';
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
-
+    $httpProvider.defaults.transformRequest = [function(data) {
+        if(null!=localStorage.getItem("token")) {
+            data.token=localStorage.getItem("token");
+        }
+        var jsonStr=JSON.stringify(data);
+        return jsonStr;
+    }];
+    $httpProvider.defaults.transformResponse = [function(data) {
+        var json = JSON.parse(data);
+        if(json.status.errorCode=="000001") {
+            alert(json.status.errorMsg);
+            return null;
+        }else if(json.status.errorCode=="000002") {
+            alert(json.status.errorMsg);
+            top.location.href=loginUrl;
+        }
+        return json;
+    }];
 });
 
 app.controller('userCtrl', ['$scope', '$rootScope', 'BusinessService', function ($scope, $rootScope, BusinessService) {
@@ -33,8 +50,7 @@ app.controller('userCtrl', ['$scope', '$rootScope', 'BusinessService', function 
     $scope.queryUserTypeById=function() {
         var param={};
         param.typeId=$scope.userType.id;
-        var jsonStr=JSON.stringify(param);
-        BusinessService.post(myRootUrl+"/userMgmt/queryUserTypeById" ,jsonStr).success(function (data) {
+        BusinessService.post(myRootUrl+"/userMgmt/queryUserTypeById.do" ,param).success(function (data) {
             //console.log(data.data);
             $scope.userType.code = data.data.typeCode;
             $scope.userType.name = data.data.typeName;
@@ -49,7 +65,8 @@ app.controller('userCtrl', ['$scope', '$rootScope', 'BusinessService', function 
     }
 
     $scope.listUserType=function() {
-        BusinessService.post(myRootUrl+"/userMgmt/listUserType" ,"").success(function (data) {
+        var param={};
+        BusinessService.post(myRootUrl+"/userMgmt/listUserType.do" ,param).success(function (data) {
             //console.log(data.data);
             $scope.userTypeList = data.data;
             for(var i=0;i<$scope.userTypeList.length;i++) {
@@ -61,16 +78,15 @@ app.controller('userCtrl', ['$scope', '$rootScope', 'BusinessService', function 
 
     $scope.submitUserTypeForm=function(isValid) {
         if(isValid) {
-            var jsonStr=JSON.stringify($scope.userType);
             //alert(jsonStr);
             if(null!=$scope.userType.id&&$scope.userType.id.length>0) {
-                BusinessService.post(myRootUrl + "/userMgmt/updateUserType", jsonStr).success(function (data) {
+                BusinessService.post(myRootUrl + "/userMgmt/updateUserType.do", $scope.userType).success(function (data) {
                     if (data.data == 1) {
                         parent.window.location.href = parent.window.location.href;
                     }
                 });
             }else {
-                BusinessService.post(myRootUrl + "/userMgmt/addUserType", jsonStr).success(function (data) {
+                BusinessService.post(myRootUrl + "/userMgmt/addUserType.do", $scope.userType).success(function (data) {
                     if (data.data == 1) {
                         parent.window.location.href = parent.window.location.href;
                     }
@@ -108,9 +124,8 @@ app.controller('userCtrl', ['$scope', '$rootScope', 'BusinessService', function 
                 }
             }
             var param={"ids":ids};
-            var jsonStr=JSON.stringify(param);
             //console.log("jsonStr="+jsonStr);
-            BusinessService.post(myRootUrl + "/userMgmt/deleteUserType", jsonStr).success(function (data) {
+            BusinessService.post(myRootUrl + "/userMgmt/deleteUserType.do", param).success(function (data) {
                 if (data.data > 0) {
                     alert("删除成功");
                     $scope.listUserType();

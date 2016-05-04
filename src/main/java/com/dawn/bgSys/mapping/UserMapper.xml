@@ -45,11 +45,25 @@
     where user_id = #{userId,jdbcType=VARCHAR}
   </select>
 
+  <select id="selectByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="List_Without_Password" />
+    from user_info
+    where login_name = #{loginName,jdbcType=VARCHAR}
+  </select>
+
   <select id="selectByUserType" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />
     from user_info
     where user_type = #{userType} and (user_name like #{searchStr} or login_name like #{searchStr})
+  </select>
+
+  <select id="selectUserByNameAndPass" resultMap="BaseResultMap" >
+    select
+    <include refid="List_Without_Password" />
+    from user_info
+    where login_name = #{loginName} and login_password = #{password}
   </select>
 
   <delete id="deleteByPrimaryKey" >

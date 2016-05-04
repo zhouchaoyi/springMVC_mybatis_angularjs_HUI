@@ -17,15 +17,19 @@ public interface IUserService {
      */
     public JSONObject queryUserTypeById(Long typeId);
 
+    public JSONObject queryUserByNameAndPass(String loginName,String password);
+
     public User queryUserById(String id);
+
+    public User queryUserByLoginName(String loginName);
 
     public int insertUserType(UserType userType);
 
-    public int insertUser(User user);
+    public int insertUser(User user) throws Exception;
 
     public int updateUserType(UserType userType);
 
-    public int updateUser(User user);
+    public int updateUser(User user) throws Exception;
 
     public int deleteUserType(List<String> ids);
 
@@ -34,4 +38,6 @@ public interface IUserService {
     public List<UserType> listUserType();
 
     public JSONObject listUserByType(String userType,int currentPage,int pageSize,String orderBy,String searchStr);
+
+
 }
