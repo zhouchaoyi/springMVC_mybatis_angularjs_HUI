@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -59,6 +61,9 @@ public class UserServiceImpl implements IUserService {
         long exp = new Date().getTime()+Long.valueOf(appExpTime);
         params.put("exp", exp);
         params.put("userId",user.getUserId());
+        params.put("loginName",user.getLoginName());
+        params.put("userName",user.getUserName());
+        params.put("modifyFlag",user.getModifyFlag());
         String token= JWTUtils.signerToken(params, appTK);
         json.put("token",token);
 
@@ -97,13 +102,18 @@ public class UserServiceImpl implements IUserService {
         return success;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public int updateUser(User user) throws Exception {
         User checkUser=userDao.selectByLoginName(user.getLoginName());
         if(null!=checkUser&&!StringUtils.equals(user.getUserId(),checkUser.getUserId())) {
             throw new OperateFailureException("此登录名已被其他用户使用");
         }
+        User checkUser2=userDao.selectByPrimaryKey(user.getUserId());
         int success=0;
         success=userDao.updateByPrimaryKey(user);
+        if(!StringUtils.equals(user.getLoginName(),checkUser2.getLoginName())||!StringUtils.equals(user.getLoginPassword(),checkUser2.getLoginPassword())) {
+            success=userDao.updateModifyFlag(user.getUserId());
+        }
         return success;
     }
 

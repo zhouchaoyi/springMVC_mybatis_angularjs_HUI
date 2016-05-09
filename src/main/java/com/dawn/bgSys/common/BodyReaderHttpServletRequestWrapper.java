@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Created by zhouchaoyi on 2016/5/4.
@@ -19,13 +20,7 @@ public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapp
     public BodyReaderHttpServletRequestWrapper(HttpServletRequest request)
             throws IOException {
         super(request);
-        BufferedReader reader = request.getReader();
-        String temp = "";
-        String str = "";
-        while((temp = reader.readLine()) != null) {
-            str = str + temp;
-        }
-        body=str.getBytes("UTF-8");
+        body = HttpHelper.getBodyString(request).getBytes(Charset.forName("UTF-8"));
     }
 
     @Override

@@ -51,6 +51,15 @@ public class UserController extends BaseController {
         return json.toString();
     }
 
+    @RequestMapping(value = "/loginByLocalAccount", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String loginByLocalAccount(@RequestBody String jsonStr) throws Exception {
+        JSONObject json = new JSONObject();
+        json.put("data", 1);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
     /**
      * 根据Id获取用户类型
      *
@@ -215,6 +224,7 @@ public class UserController extends BaseController {
         String userId = WebJsonUtils.getStringValue(jsonStr, "id", true);
         String loginName = WebJsonUtils.getStringValue(jsonStr, "loginName", true);
         String userName = WebJsonUtils.getStringValue(jsonStr, "userName", true);
+        //System.out.println("userName="+userName+"<<<<<<");
         String loginPassword = WebJsonUtils.getStringValue(jsonStr, "loginPassword", true);
         String userType = WebJsonUtils.getStringValue(jsonStr, "userType", true);
         String sex = WebJsonUtils.getStringValue(jsonStr, "sex", true);

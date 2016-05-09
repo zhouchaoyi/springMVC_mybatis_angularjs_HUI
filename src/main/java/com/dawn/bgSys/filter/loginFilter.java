@@ -3,11 +3,14 @@ package com.dawn.bgSys.filter;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.*;
 import com.dawn.bgSys.common.consts.Consts;
+import com.dawn.bgSys.domain.User;
 import com.dawn.bgSys.exception.GenericException;
 import com.dawn.bgSys.exception.OperateFailureException;
+import com.dawn.bgSys.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,7 +27,7 @@ import java.util.Map;
 public class loginFilter extends BaseFilter {
 
     private Logger logger= Logger.getLogger(loginFilter.class);
-    private static final String[] IGNORE_URI = {"/login"};
+    private static final String[] IGNORE_URI = {"/login.do"};
 
     private String appTK;
 
@@ -38,12 +41,14 @@ public class loginFilter extends BaseFilter {
                 break;
             }
         }
+        ApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
         BodyReaderHttpServletRequestWrapper requestWrapper=null;
         if (!flag) {
             System.out.println("被拦截<<<<<<");
             try {
                 requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
-                String jsonStr= StreamUtil.readString(requestWrapper.getReader());
+                String jsonStr = HttpHelper.getBodyString(requestWrapper);
+                //System.out.println("jsonStr="+jsonStr+"<<<<<<<");
                 String token = WebJsonUtils.getStringValue(jsonStr,"token",false);
                 PropertiesUtil pUtil1 = new PropertiesUtil("application.properties");
                 appTK = pUtil1.getKeyValue("APP_T_K");
@@ -60,6 +65,17 @@ public class loginFilter extends BaseFilter {
                     //System.out.println("nowTime="+nowTime+"<<<<<");
                     if(exp<nowTime) {
                         throw new OperateFailureException("登录已过期，请重新登录",Consts.TOKEN_ERROR_CODE);
+                    }
+
+                    int modifyFlag=Integer.valueOf(map.get("modifyFlag").toString());
+                    String userId=map.get("userId").toString();
+                    IUserService userService = (IUserService)context.getBean("userServiceImpl");
+                    User user = userService.queryUserById(userId);
+                    System.out.println("userId="+userId);
+                    System.out.println("modifyFlag="+modifyFlag+"<<<<<");
+                    System.out.println("modifyFlag2="+user.getModifyFlag()+"<<<<<");
+                    if(modifyFlag!=user.getModifyFlag()) {
+                        throw new OperateFailureException("登录名或密码错误，请重新登录",Consts.TOKEN_ERROR_CODE);
                     }
                 }
             } catch (Exception ex) {

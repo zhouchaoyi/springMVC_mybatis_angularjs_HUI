@@ -41,17 +41,25 @@
           <input type="password" ng-model="model.password" placeholder="密码"  class="input-text size-L">
         </div>
       </div>
-      <!--<div class="row">-->
-        <!--<div class="formControls col-8 col-offset-3">-->
-          <!--<label for="online">-->
-            <!--<input type="checkbox" name="online" id="online" value="">-->
-            <!--使我保持登录状态</label>-->
-        <!--</div>-->
-      <!--</div>-->
+      <div class="row">
+        <div class="formControls col-8 col-offset-3">
+          <label for="online">
+            <input type="checkbox" ng-model="model.saveAccount" name="online" id="online" value="">
+            在本地保存为常用帐号</label>
+        </div>
+      </div>
       <div class="row">
         <div class="formControls col-8 col-offset-3">
           <input name="" type="submit" class="btn btn-success radius size-L" value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
         </div>
+      </div>
+      <div class="row" ng-if="hasLocalAccount">
+          <div class="formControls col-9 col-offset-3">
+        常用帐户登录：
+            <span ng-repeat="account in localAccount">
+              <span><a ng-bind="account.loginName" ng-click="loginByLocalAccount(account.token)"></a>&nbsp;</span>
+            </span>
+          </div>
       </div>
     </form>
   </div>
@@ -61,9 +69,11 @@
 <script type="text/javascript" src="lib/angular.min.js"></script>
 <script type="text/javascript" src="js/H-ui.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/angular_base.js"></script>
 <script type="text/javascript" src="js/user/login.js"></script>
 <script>
-
+//  var exp=new Date();
+//  console.log(exp.getTime())
 </script>
 </body>
 </html>

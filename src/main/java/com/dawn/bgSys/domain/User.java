@@ -49,6 +49,8 @@ public class User {
 
     private String idCard;
 
+    private int modifyFlag;
+
     public String getUserId() {
         return userId;
     }
@@ -231,5 +233,13 @@ public class User {
 
     public void setIdCard(String idCard) {
         this.idCard = idCard == null ? null : idCard.trim();
+    }
+
+    public int getModifyFlag() {
+        return modifyFlag;
+    }
+
+    public void setModifyFlag(int modifyFlag) {
+        this.modifyFlag = modifyFlag;
     }
 }
