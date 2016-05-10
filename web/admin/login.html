@@ -55,7 +55,7 @@
       </div>
       <div class="row" ng-if="hasLocalAccount">
           <div class="formControls col-9 col-offset-3">
-        常用帐户登录：
+        常用帐户登录（<a style="color:blue" ng-click="delLocalAccount()">清除</a>）：
             <span ng-repeat="account in localAccount">
               <span><a ng-bind="account.loginName" ng-click="loginByLocalAccount(account.token)"></a>&nbsp;</span>
             </span>

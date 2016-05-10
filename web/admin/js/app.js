@@ -36,8 +36,9 @@ function delCookie(name) {
     var exp = new Date();
     exp.setTime(exp.getTime() - 1);
     var cval=getCookie(name);
-    if(cval!=null)
-        document.cookie= name + "="+cval+";expires="+exp.toGMTString();
+    if(cval!=null) {
+        document.cookie = name + "=" + escape(cval) + ";expires=" + exp.toGMTString() + ";path=/";
+    }
 }
 
 //覆写H-ui.js中的setCookie()
@@ -90,9 +91,24 @@ function addTokenInTokenStr(token) {
     if(null==tokenStr) {
         tokenStr=token;
     }else {
-        tokenStr=tokenStr+","+token;
+        var tokenArray=tokenStr.split(",");
+        var loginName=getParamFromToken(token,"loginName");
+        var changeStr="";
+        for(var i=0;i<tokenArray.length;i++) {
+            var loginName2 = getParamFromToken(tokenArray[i],"loginName");
+            if(loginName2==loginName) {
+                changeStr=tokenArray[i];
+            }
+        }
+        if(changeStr=="") {
+            tokenStr = tokenStr + "," + token;
+        }else {
+            tokenStr=","+tokenStr;
+            tokenStr=tokenStr.replace(","+changeStr,","+token);
+            tokenStr=tokenStr.substring(1);
+        }
     }
-    setCookie("token_str",tokenStr,"d3650"); //保存10年
+    setCookie("token_str",tokenStr,"d3650"); //保存10年(但实际过期时间要看token的exp字段)
 }
 
 var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

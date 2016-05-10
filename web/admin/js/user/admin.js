@@ -141,12 +141,12 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         //console.log(jsonStr);
         if(null!=$scope.model.id&&$scope.model.id.length>0) {
             BusinessService.post(myRootUrl + $scope.updateUrl, $scope.model).success(function (data) {
+                //console.log(data);
                 if(null==data) {
                     return;
                 }
-                if (data.data == 1) {
-                    parent.window.location.href = parent.window.location.href;
-                }
+                parent.window.location.href = parent.window.location.href;
+
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
             });
@@ -155,9 +155,8 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 if(null==data) {
                     return;
                 }
-                if (data.data == 1) {
-                    parent.window.location.href = parent.window.location.href;
-                }
+                parent.window.location.href = parent.window.location.href;
+
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
             });

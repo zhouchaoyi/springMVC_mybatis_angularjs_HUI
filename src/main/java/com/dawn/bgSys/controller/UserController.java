@@ -1,6 +1,8 @@
 package com.dawn.bgSys.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dawn.bgSys.common.JWTUtils;
+import com.dawn.bgSys.common.PropertiesUtil;
 import com.dawn.bgSys.common.Utils;
 import com.dawn.bgSys.common.WebJsonUtils;
 import com.dawn.bgSys.domain.User;
@@ -9,16 +11,14 @@ import com.dawn.bgSys.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: zhouchaoyi
@@ -34,6 +34,12 @@ public class UserController extends BaseController {
 
     @Autowired
     private IUserService userService;
+
+    @Value("${APP_T_K}")
+    private String appTK;
+
+    @Value("${APP_EXP_TIME}")
+    private String appExpTime;
 
 
     @RequestMapping(value = "/login", produces = "application/json;charset=UTF-8")
@@ -232,6 +238,7 @@ public class UserController extends BaseController {
         String idCard = WebJsonUtils.getStringValue(jsonStr, "idCard", false);
         String publicAccount = WebJsonUtils.getBooleanValue(jsonStr,"publicAccount");
         String status = WebJsonUtils.getBooleanValue(jsonStr,"status");
+        String token = WebJsonUtils.getStringValue(jsonStr, "token",true);
 
         User user = new User();
         user.setUserId(userId);
@@ -246,10 +253,13 @@ public class UserController extends BaseController {
         user.setUserType(userType);
         user.setRegistedDate(new Date());
 
-        int success = this.userService.updateUser(user);
+        Map<String,Object> map= JWTUtils.verifierToken(token, appTK);
+        String currentUserId=map.get("userId").toString();
+
+        JSONObject result = this.userService.updateUser(user,currentUserId);
         //System.out.println("success="+success);
         JSONObject json = new JSONObject();
-        json.put("data", success);
+        json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));
         return json.toString();
     }

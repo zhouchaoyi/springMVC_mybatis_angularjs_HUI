@@ -29,7 +29,7 @@ public interface IUserService {
 
     public int updateUserType(UserType userType);
 
-    public int updateUser(User user) throws Exception;
+    public JSONObject updateUser(User user,String currentUserId) throws Exception;
 
     public int deleteUserType(List<String> ids);
 

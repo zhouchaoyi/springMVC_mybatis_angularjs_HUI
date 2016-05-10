@@ -103,7 +103,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public int updateUser(User user) throws Exception {
+    public JSONObject updateUser(User user,String currentUserId) throws Exception {
+        JSONObject result = new JSONObject();
         User checkUser=userDao.selectByLoginName(user.getLoginName());
         if(null!=checkUser&&!StringUtils.equals(user.getUserId(),checkUser.getUserId())) {
             throw new OperateFailureException("此登录名已被其他用户使用");
@@ -112,9 +113,25 @@ public class UserServiceImpl implements IUserService {
         int success=0;
         success=userDao.updateByPrimaryKey(user);
         if(!StringUtils.equals(user.getLoginName(),checkUser2.getLoginName())||!StringUtils.equals(user.getLoginPassword(),checkUser2.getLoginPassword())) {
+            //如果登录名或密码修改，要更新修改标志modify_flag
             success=userDao.updateModifyFlag(user.getUserId());
+            User user2=userDao.selectByPrimaryKey(user.getUserId());
+            //如果修改的人和当前用户是同一个，需要返回更新的token给客户端，防止客户端修改密码后不能继续操作了
+            if(StringUtils.equals(currentUserId,user.getUserId())) {
+                Map params = new HashMap();
+                long iat = new Date().getTime();
+                params.put("iat", iat);
+                long exp = new Date().getTime()+Long.valueOf(appExpTime);
+                params.put("exp", exp);
+                params.put("userId",user2.getUserId());
+                params.put("loginName",user2.getLoginName());
+                params.put("userName",user2.getUserName());
+                params.put("modifyFlag",user2.getModifyFlag());
+                String token= JWTUtils.signerToken(params, appTK);
+                result.put("token",token);
+            }
         }
-        return success;
+        return result;
     }
 
     public int deleteUserType(List<String> ids) {

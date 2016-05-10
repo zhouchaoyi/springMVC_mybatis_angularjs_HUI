@@ -55,9 +55,10 @@ public class loginFilter extends BaseFilter {
                 if(StringUtils.length(token)==0) {
                     throw new OperateFailureException("请先登录",Consts.TOKEN_ERROR_CODE);
                 }
+                //System.out.println("appTK="+appTK+"<<<<<<<");
                 Map<String,Object> map= JWTUtils.verifierToken(token,appTK);
                 if(null==map) {
-                    throw new OperateFailureException("token验证失败",Consts.TOKEN_ERROR_CODE);
+                    throw new OperateFailureException("授权验证失败",Consts.TOKEN_ERROR_CODE);
                 }else {
                     long exp=Long.valueOf(map.get("exp").toString());
                     //System.out.println("exp="+exp+"<<<<<");
@@ -71,11 +72,8 @@ public class loginFilter extends BaseFilter {
                     String userId=map.get("userId").toString();
                     IUserService userService = (IUserService)context.getBean("userServiceImpl");
                     User user = userService.queryUserById(userId);
-                    System.out.println("userId="+userId);
-                    System.out.println("modifyFlag="+modifyFlag+"<<<<<");
-                    System.out.println("modifyFlag2="+user.getModifyFlag()+"<<<<<");
                     if(modifyFlag!=user.getModifyFlag()) {
-                        throw new OperateFailureException("登录名或密码错误，请重新登录",Consts.TOKEN_ERROR_CODE);
+                        throw new OperateFailureException("登录名密码错误或登录已过期，请重新登录",Consts.TOKEN_ERROR_CODE);
                     }
                 }
             } catch (Exception ex) {

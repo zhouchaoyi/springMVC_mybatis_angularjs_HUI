@@ -22,6 +22,11 @@ var app = angular.module("myApp",[]).config(function($httpProvider) {
         }else if(json.status.errorCode=="000002") {
             alert(json.status.errorMsg);
             top.location.href=loginUrl;
+        }else if(json.status.errorCode=="000000") {
+            if(json.data.token!=null&&json.data.token!=undefined) {
+                var exp = getParamFromToken(json.data.token,"exp");
+                setCookie("token",json.data.token,exp);
+            }
         }
         return json;
     }];

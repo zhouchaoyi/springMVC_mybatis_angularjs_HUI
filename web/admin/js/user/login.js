@@ -41,6 +41,11 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         });
     };
 
+    $scope.delLocalAccount=function() {
+        delCookie("token_str");
+        window.location.href = window.location.href;
+    };
+
     $scope.submitForm=function() {
         if(trimStr($scope.model.loginName)=="") {
             alert("账号不能为空");
@@ -52,18 +57,16 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }
         //console.log(jsonStr);
         BusinessService.post(myRootUrl + $scope.loginUrl, $scope.model).success(function (data) {
-            console.log(data);
+            //console.log(data);
             //localStorage.setItem("token",data.data.token);
             if(null==data) {
                 return;
             }
-            var exp = getParamFromToken(data.data.token,"exp");
-            setCookie("token",data.data.token,exp);
             if($scope.model.saveAccount) {
                 addTokenInTokenStr(data.data.token); //保存到本地常用账号
             }
-            console.log(getCookie("token_str"))
-            //window.location.href = "./";
+            //console.log(getCookie("token_str"))
+            window.location.href = "./";
 
         }).error(function(data, status, headers, config) {
             console.log("error<<<<");
