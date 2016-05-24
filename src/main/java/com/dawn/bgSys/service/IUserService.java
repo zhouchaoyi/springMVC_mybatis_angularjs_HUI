@@ -1,6 +1,7 @@
 package com.dawn.bgSys.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.domain.User;
 import com.dawn.bgSys.domain.UserType;
 
@@ -38,6 +39,18 @@ public interface IUserService {
     public List<UserType> listUserType();
 
     public JSONObject listUserByType(String userType,int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public int addDepartment(Department dept) throws Exception;
+
+    public JSONObject listDepartment(int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public Department queryDepartmentById(String id);
+
+    public int updateDepartment(Department dept);
+
+    public int deleteDepartment(List<String> ids);
+
+    public int doMoveDepartment(String departmentId,String move);
 
 
 }

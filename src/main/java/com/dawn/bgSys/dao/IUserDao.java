@@ -25,4 +25,7 @@ public interface IUserDao {
     int updateByPrimaryKey(User record);
 
     int updateModifyFlag(String userId);
+
+    int updateDateById(User user);
+
 }

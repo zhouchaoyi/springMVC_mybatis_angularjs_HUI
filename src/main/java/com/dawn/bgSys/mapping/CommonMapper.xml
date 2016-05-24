@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.ICommonDao" >
+
+  <select id="select" resultType="hashmap" >
+    ${sql}
+  </select>
+
+  <delete id="delete" >
+    ${sql}
+  </delete>
+
+  <insert id="insert" >
+    ${sql}
+  </insert>
+
+  <update id="update" >
+    ${sql}
+  </update>
+</mapper>

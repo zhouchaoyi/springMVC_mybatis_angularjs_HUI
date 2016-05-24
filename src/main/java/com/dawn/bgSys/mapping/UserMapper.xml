@@ -341,4 +341,20 @@
     set modify_flag=COALESCE(modify_flag,0)+1
     where user_id = #{userId}
   </update>
+
+  <update id="updateDateById" parameterType="com.dawn.bgSys.domain.User" >
+    update user_info
+    <set >
+      <if test="lastLogin != null" >
+        last_login = #{lastLogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastLogout != null" >
+        last_logout = #{lastLogout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginDate != null" >
+        login_date = #{loginDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
 </mapper>

@@ -56,6 +56,7 @@ function setCookie(name,value,time) {
     }else {
         exp.setTime(exp.getTime() + strsec * 1);
     }
+    //console.log(name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/");
     document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/";
 }
 function getsec(str) {

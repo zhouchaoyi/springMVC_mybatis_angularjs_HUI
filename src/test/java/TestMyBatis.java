@@ -1,7 +1,5 @@
-import com.alibaba.fastjson.JSON;
-import com.dawn.bgSys.domain.User;
+import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.service.IUserService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +18,7 @@ public class TestMyBatis {
     private static Logger logger = Logger.getLogger(TestMyBatis.class);
     //	private ApplicationContext ac = null;
     @Resource
-    private IUserService userService2 = null;
+    private IUserService userService = null;
 
 //	@Before
 //	public void before() {
@@ -35,6 +33,23 @@ public class TestMyBatis {
         // System.out.println(user.getUserName());
         // logger.info(""+user.getUserName());
         //logger.info(JSON.toJSONString(user));
+        //int a=123;
+        //System.out.println(Long.valueOf(a)+"<<<<<");
 
+    }
+
+    @Test
+    public void test2() {
+        Department dept =new Department();
+        dept.setDepartmentName("测试111");
+        dept.setParentId(Long.valueOf(-1));
+        dept.setDepartmentKey("Test");
+        dept.setRemark("");
+        dept.setIsTypeOnly(Byte.valueOf("1"));
+        try {
+            userService.addDepartment(dept);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -3,12 +3,16 @@ package com.dawn.bgSys.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.JWTUtils;
+import com.dawn.bgSys.dao.ICommonDao;
+import com.dawn.bgSys.dao.IDepartmentDao;
 import com.dawn.bgSys.dao.IUserDao;
 import com.dawn.bgSys.dao.IUserTypeDao;
+import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.domain.User;
 import com.dawn.bgSys.domain.UserType;
 import com.dawn.bgSys.exception.OperateFailureException;
 import com.dawn.bgSys.service.IUserService;
+import com.dawn.bgSys.utils.TreeModel;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +38,12 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IUserDao userDao;
 
+    @Autowired
+    private IDepartmentDao departmentDao;
+
+    @Autowired
+    private TreeModel treeModel;
+
     @Value("${APP_T_K}")
     private String appTK;
 
@@ -52,6 +62,14 @@ public class UserServiceImpl implements IUserService {
         if(null==user) {
             throw new OperateFailureException("登录名或密码错误");
         }
+        Date loginDate=null;
+        if(user.getLoginDate()==null) {
+            loginDate=new Date();
+        }
+        user.setLoginDate(loginDate);
+        user.setLastLogin(new Date());
+        userDao.updateDateById(user);
+
         String jsonStr= JSON.toJSONString(user);
         JSONObject json=JSONObject.parseObject(jsonStr);
 
@@ -169,5 +187,81 @@ public class UserServiceImpl implements IUserService {
         result.put("pages",page.getPages());
 
         return result;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int addDepartment(Department dept) throws Exception {
+        int success=0;
+        success=departmentDao.insert(dept);
+        treeModel.setsTableName("department_info");
+        treeModel.setsIdField("department_id");
+        treeModel.resetClassId(dept.getDepartmentId()+"");
+        return success;
+    }
+
+    public JSONObject listDepartment(int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        if(currentPage>0) {
+            PageHelper.startPage(currentPage, pageSize);
+        }
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<Department> list = departmentDao.select(searchStr);
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public Department queryDepartmentById(String id) {
+        Department dept=departmentDao.selectByPrimaryKey(Long.valueOf(id));
+        return dept;
+    }
+
+    public int updateDepartment(Department dept) {
+        int success=0;
+        //System.out.println(dept.getParentId()+"<<<<<<<");
+        if(dept.getParentId()!=-1) {
+            String parentClassId= departmentDao.selectByPrimaryKey(dept.getParentId()).getClassId();
+            //System.out.println("class_id="+parentClassId);
+            if (parentClassId.indexOf(dept.getClassId()) == 0) {
+                throw new OperateFailureException("不能选择子部门或自己作为父部门！请重新选择。");
+            }
+        }
+        success=departmentDao.updateByPrimaryKey(dept);
+        treeModel.setsTableName("department_info");
+        treeModel.setsIdField("department_id");
+        treeModel.resetClassId(dept.getDepartmentId()+"");
+        return success;
+    }
+
+    public int deleteDepartment(List<String> ids) {
+        int success=0;
+        success=departmentDao.deleteByPrimaryKey(ids);
+        return success;
+    }
+
+    public int doMoveDepartment(String departmentId,String move) {
+        int success=1;
+        treeModel.setsTableName("department_info");
+        treeModel.setsIdField("department_id");
+        boolean result=false;
+        if(StringUtils.equals("1",move)) {
+            result=treeModel.moveUp(departmentId);
+        }else if(StringUtils.equals("-1",move)) {
+            result=treeModel.moveDown(departmentId);
+        }
+        if(!result) {
+            throw new OperateFailureException(treeModel.getPrompt());
+        }
+        return success;
     }
 }

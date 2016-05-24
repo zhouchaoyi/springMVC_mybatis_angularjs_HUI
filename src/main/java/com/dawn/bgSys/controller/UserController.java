@@ -5,6 +5,7 @@ import com.dawn.bgSys.common.JWTUtils;
 import com.dawn.bgSys.common.PropertiesUtil;
 import com.dawn.bgSys.common.Utils;
 import com.dawn.bgSys.common.WebJsonUtils;
+import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.domain.User;
 import com.dawn.bgSys.domain.UserType;
 import com.dawn.bgSys.service.IUserService;
@@ -280,5 +281,116 @@ public class UserController extends BaseController {
         return json.toString();
     }
 
+    @RequestMapping(value = "/addDepartment", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addDepartment(@RequestBody String jsonStr) throws Exception {
+        String departmentName = WebJsonUtils.getStringValue(jsonStr, "departmentName", true);
+        int parentId = WebJsonUtils.getIntValue(jsonStr, "parentId", true);
+        String departmentKey = WebJsonUtils.getStringValue(jsonStr, "departmentKey", false);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String isTypeOnly = WebJsonUtils.getBooleanValue(jsonStr,"isTypeOnly");
+
+        Department dept = new Department();
+        dept.setDepartmentName(departmentName);
+        dept.setParentId(Long.valueOf(parentId));
+        dept.setDepartmentKey(departmentKey);
+        dept.setRemark(remark);
+        dept.setIsTypeOnly(Byte.valueOf(isTypeOnly));
+
+        int success = this.userService.addDepartment(dept);
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listDepartment", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listDepartment(@RequestBody String jsonStr) throws Exception {
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listDepartment(currentPage,pageSize,orderBy,searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/queryDepartmentById", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String queryDepartmentById(@RequestBody String jsonStr) throws Exception {
+
+        String id = WebJsonUtils.getStringValue(jsonStr, "id", true);
+
+        Department result = this.userService.queryDepartmentById(id);
+
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/updateDepartment", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateDepartment(@RequestBody String jsonStr) throws Exception {
+        String departmentId = WebJsonUtils.getStringValue(jsonStr, "id", true);
+        String departmentName = WebJsonUtils.getStringValue(jsonStr, "departmentName", true);
+        int parentId = WebJsonUtils.getIntValue(jsonStr, "parentId", true);
+        String classId = WebJsonUtils.getStringValue(jsonStr, "classId", true);
+        String departmentKey = WebJsonUtils.getStringValue(jsonStr, "departmentKey", false);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String isTypeOnly = WebJsonUtils.getBooleanValue(jsonStr,"isTypeOnly");
+
+        Department dept = new Department();
+        dept.setDepartmentId(Long.valueOf(departmentId));
+        dept.setDepartmentName(departmentName);
+        dept.setParentId(Long.valueOf(parentId));
+        dept.setClassId(classId);
+        dept.setDepartmentKey(departmentKey);
+        dept.setRemark(remark);
+        dept.setIsTypeOnly(Byte.valueOf(isTypeOnly));
+
+        int success = this.userService.updateDepartment(dept);
+        //System.out.println("success="+success);
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/deleteDepartment", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String deleteDepartment(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.deleteDepartment(list);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/doMoveDepartment", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String doMoveDepartment(@RequestBody String jsonStr) throws Exception {
+        String move = WebJsonUtils.getStringValue(jsonStr, "move", true);
+        String departmentId= WebJsonUtils.getStringValue(jsonStr, "departmentId", true);
+
+        int success = this.userService.doMoveDepartment(departmentId,move);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
 
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IDepartmentDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.Department" >
+    <id column="department_id" property="departmentId" jdbcType="BIGINT" />
+    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="class_id" property="classId" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="department_key" property="departmentKey" jdbcType="VARCHAR" />
+    <result column="is_type_only" property="isTypeOnly" jdbcType="TINYINT" />
+    <result column="is_department" property="isDepartment" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    department_id, department_name, parent_id, class_id, remark, department_key, is_type_only, 
+    is_department
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from department_info
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </select>
+
+  <select id="select" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from department_info
+    where (department_name like #{searchStr})
+  </select>
+
+  <delete id="deleteByPrimaryKey" >
+    delete from department_info
+    where department_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.Department" useGeneratedKeys="true" keyProperty="departmentId">
+    insert into department_info (department_name, parent_id,
+      class_id, remark, department_key, 
+      is_type_only, is_department)
+    values (#{departmentName,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT},
+      #{classId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{departmentKey,jdbcType=VARCHAR}, 
+      #{isTypeOnly,jdbcType=TINYINT}, #{isDepartment,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.Department" >
+    insert into department_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="departmentName != null" >
+        department_name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="classId != null" >
+        class_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="departmentKey != null" >
+        department_key,
+      </if>
+      <if test="isTypeOnly != null" >
+        is_type_only,
+      </if>
+      <if test="isDepartment != null" >
+        is_department,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="departmentName != null" >
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentKey != null" >
+        #{departmentKey,jdbcType=VARCHAR},
+      </if>
+      <if test="isTypeOnly != null" >
+        #{isTypeOnly,jdbcType=TINYINT},
+      </if>
+      <if test="isDepartment != null" >
+        #{isDepartment,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.Department" >
+    update department_info
+    <set >
+      <if test="departmentName != null" >
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        class_id = #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentKey != null" >
+        department_key = #{departmentKey,jdbcType=VARCHAR},
+      </if>
+      <if test="isTypeOnly != null" >
+        is_type_only = #{isTypeOnly,jdbcType=TINYINT},
+      </if>
+      <if test="isDepartment != null" >
+        is_department = #{isDepartment,jdbcType=BIGINT},
+      </if>
+    </set>
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.Department" useGeneratedKeys="true" keyProperty="departmentId">
+    update department_info
+    set department_name = #{departmentName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      class_id = #{classId,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      department_key = #{departmentKey,jdbcType=VARCHAR},
+      is_type_only = #{isTypeOnly,jdbcType=TINYINT},
+      is_department = #{isDepartment,jdbcType=BIGINT}
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -25,7 +25,12 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
 
     $scope.loginByLocalAccount=function(token) {
         var exp = getParamFromToken(token,"exp");
-        setCookie("token",token,exp);
+        var nowDate = new Date();
+        if(exp<nowDate.getTime()) { //token的exp已过期
+            setCookie("token", token, "s30");
+        }else {
+            setCookie("token", token, exp);
+        }
         var url="/userMgmt/loginByLocalAccount.do";
         var param={};
         BusinessService.post(myRootUrl + url, param).success(function (data) {
