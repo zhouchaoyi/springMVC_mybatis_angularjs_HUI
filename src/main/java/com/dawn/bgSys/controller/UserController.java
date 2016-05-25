@@ -7,6 +7,7 @@ import com.dawn.bgSys.common.Utils;
 import com.dawn.bgSys.common.WebJsonUtils;
 import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.domain.User;
+import com.dawn.bgSys.domain.UserGroup;
 import com.dawn.bgSys.domain.UserType;
 import com.dawn.bgSys.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -163,7 +164,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/listUserByType", produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String listUserByType(@RequestBody String jsonStr) throws Exception {
-        String userType = WebJsonUtils.getStringValue(jsonStr, "userType", true);
+        String userType = WebJsonUtils.getStringValue(jsonStr, "userType", false);
         int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
         int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
         String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
@@ -386,6 +387,183 @@ public class UserController extends BaseController {
         String departmentId= WebJsonUtils.getStringValue(jsonStr, "departmentId", true);
 
         int success = this.userService.doMoveDepartment(departmentId,move);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/addUserGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addUserGroup(@RequestBody String jsonStr) throws Exception {
+        String groupName = WebJsonUtils.getStringValue(jsonStr, "groupName", true);
+        String groupKey = WebJsonUtils.getStringValue(jsonStr, "groupKey", false);
+        String departmentId = WebJsonUtils.getStringValue(jsonStr, "departmentId", false);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String status = WebJsonUtils.getBooleanValue(jsonStr,"status");
+
+        String token = WebJsonUtils.getStringValue(jsonStr, "token", true);
+        Map<String,Object> map= JWTUtils.verifierToken(token, appTK);
+        String currentUserId=map.get("userId").toString();
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroupName(groupName);
+        userGroup.setGroupKey(groupKey);
+        userGroup.setDepartmentId(Long.valueOf(departmentId));
+        userGroup.setRemark(remark);
+        userGroup.setStatus(Byte.valueOf(status));
+        userGroup.setUserId(currentUserId);
+        userGroup.setCreatedDate(new Date());
+
+        int success = this.userService.addUserGroup(userGroup);
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listUserGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listUserGroup(@RequestBody String jsonStr) throws Exception {
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserGroup(currentPage, pageSize, orderBy, searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/queryUserGroupById", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String queryUserGroupById(@RequestBody String jsonStr) throws Exception {
+
+        String id = WebJsonUtils.getStringValue(jsonStr, "id", true);
+
+        UserGroup result = this.userService.queryUserGroupById(id);
+
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/updateUserGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateUserGroup(@RequestBody String jsonStr) throws Exception {
+        String groupId = WebJsonUtils.getStringValue(jsonStr, "id", true);
+        String groupName = WebJsonUtils.getStringValue(jsonStr, "groupName", true);
+        String groupKey = WebJsonUtils.getStringValue(jsonStr, "groupKey", false);
+        String departmentId = WebJsonUtils.getStringValue(jsonStr, "departmentId", false);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String status = WebJsonUtils.getBooleanValue(jsonStr,"status");
+
+        String token = WebJsonUtils.getStringValue(jsonStr, "token", true);
+        Map<String,Object> map= JWTUtils.verifierToken(token, appTK);
+        String currentUserId=map.get("userId").toString();
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroupId(Long.valueOf(groupId));
+        userGroup.setGroupName(groupName);
+        userGroup.setGroupKey(groupKey);
+        userGroup.setDepartmentId(Long.valueOf(departmentId));
+        userGroup.setRemark(remark);
+        userGroup.setStatus(Byte.valueOf(status));
+        userGroup.setUserId(currentUserId);
+
+        int success = this.userService.updateUserGroup(userGroup);
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/deleteUserGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String deleteUserGroup(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        //System.out.println("ids="+ids+"<<<<<<");
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.deleteUserGroup(list);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/addUserGroupMember", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addUserGroupMember(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String groupId = WebJsonUtils.getStringValue(jsonStr, "groupId", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.addUserGroupMember(list, groupId);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listUserForUserGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listUserForUserGroup(@RequestBody String jsonStr) throws Exception {
+        String groupId = WebJsonUtils.getStringValue(jsonStr, "groupId", true);
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserForUserGroup(groupId, currentPage, pageSize, orderBy, searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listUserGroupMember", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listUserGroupMember(@RequestBody String jsonStr) throws Exception {
+        String groupId = WebJsonUtils.getStringValue(jsonStr, "groupId", true);
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserGroupMember(groupId, currentPage, pageSize, orderBy, searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/deleteUserGroupMember", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String deleteUserGroupMember(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String groupId = WebJsonUtils.getStringValue(jsonStr, "groupId", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.deleteUserGroupMember(list, groupId);
 
         JSONObject json = new JSONObject();
         json.put("data", success);

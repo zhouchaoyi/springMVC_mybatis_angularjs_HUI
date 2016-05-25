@@ -28,4 +28,6 @@ public interface IUserDao {
 
     int updateDateById(User user);
 
+    List<User> selectUserForUserGroup(@Param("groupId")String groupId,@Param("searchStr")String searchStr);
+
 }

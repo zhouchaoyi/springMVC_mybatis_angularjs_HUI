@@ -3,6 +3,7 @@ package com.dawn.bgSys.service;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.domain.Department;
 import com.dawn.bgSys.domain.User;
+import com.dawn.bgSys.domain.UserGroup;
 import com.dawn.bgSys.domain.UserType;
 
 import java.util.List;
@@ -52,5 +53,21 @@ public interface IUserService {
 
     public int doMoveDepartment(String departmentId,String move);
 
+    public int addUserGroup(UserGroup userGroup) throws Exception;
 
+    public JSONObject listUserGroup(int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public UserGroup queryUserGroupById(String id);
+
+    public int updateUserGroup(UserGroup userGroup) throws Exception;
+
+    public int deleteUserGroup(List<String> ids);
+
+    public int addUserGroupMember(List<String> ids,String groupId);
+
+    public JSONObject listUserForUserGroup(String groupId,int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public JSONObject listUserGroupMember(String groupId,int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public int deleteUserGroupMember(List<String> ids,String groupId);
 }

@@ -57,7 +57,11 @@
     select
     <include refid="Base_Column_List" />
     from user_info
-    where user_type = #{userType} and (user_name like #{searchStr} or login_name like #{searchStr})
+    where
+    <if test="userType != ''" >
+      user_type = #{userType} and
+    </if>
+     (user_name like #{searchStr} or login_name like #{searchStr})
   </select>
 
   <select id="selectUserByNameAndPass" resultMap="BaseResultMap" >
@@ -66,6 +70,16 @@
     from user_info
     where login_name = #{loginName} and login_password = #{password}
   </select>
+
+  <select id="selectUserForUserGroup" resultMap="BaseResultMap" >
+    select
+    <include refid="List_Without_Password" />
+    from user_info
+    where
+    (user_name like #{searchStr} or login_name like #{searchStr})
+    and user_id not in (select user_id from user_group_relation where user_group_id=#{groupId})
+  </select>
+
 
   <delete id="deleteByPrimaryKey" >
     delete from user_info

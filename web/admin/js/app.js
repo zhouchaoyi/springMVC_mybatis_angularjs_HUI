@@ -13,7 +13,7 @@ function getQueryString(name) {
     url=url.substr(url.indexOf("?")+1);
     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
     var r = url.match(reg);
-    if(r!=null)return  unescape(r[2]); return null;
+    if(r!=null)return  decodeURIComponent(r[2]); return null;
 }
 
 function trimStr(str){

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IUserGroupDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.UserGroup" >
+    <id column="group_id" property="groupId" jdbcType="BIGINT" />
+    <result column="department_id" property="departmentId" jdbcType="BIGINT" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="group_type_id" property="groupTypeId" jdbcType="BIGINT" />
+    <result column="created_date" property="createdDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="class_id" property="classId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="third_part_id" property="thirdPartId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="group_key" property="groupKey" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    group_id, department_id, group_name, group_type_id, created_date, remark, parent_id, 
+    class_id, user_id, third_part_id, status, group_key
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_group
+    where group_id = #{groupId,jdbcType=BIGINT}
+  </select>
+
+  <select id="select" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from user_group
+    where (group_name like #{searchStr})
+  </select>
+
+  <select id="selectMemberCount" resultType="hashmap">
+    select a.group_id as groupId,count(b.user_id) as memberCount
+    from user_group a
+    left join user_group_relation b on a.group_id=b.user_group_id
+    where a.group_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    group by a.group_id
+  </select>
+
+  <delete id="deleteByPrimaryKey" >
+    delete from user_group
+    where group_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.UserGroup" >
+    insert into user_group (group_id, department_id, group_name, 
+      group_type_id, created_date, remark, 
+      parent_id, class_id, user_id, 
+      third_part_id, status, group_key
+      )
+    values (#{groupId,jdbcType=BIGINT}, #{departmentId,jdbcType=BIGINT}, #{groupName,jdbcType=VARCHAR}, 
+      #{groupTypeId,jdbcType=BIGINT}, #{createdDate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=BIGINT}, #{classId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{thirdPartId,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{groupKey,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.UserGroup" >
+    insert into user_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="groupName != null" >
+        group_name,
+      </if>
+      <if test="groupTypeId != null" >
+        group_type_id,
+      </if>
+      <if test="createdDate != null" >
+        created_date,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="classId != null" >
+        class_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="thirdPartId != null" >
+        third_part_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="groupKey != null" >
+        group_key,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupTypeId != null" >
+        #{groupTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartId != null" >
+        #{thirdPartId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="groupKey != null" >
+        #{groupKey,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.UserGroup" >
+    update user_group
+    <set >
+      <if test="departmentId != null" >
+        department_id = #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="groupName != null" >
+        group_name = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupTypeId != null" >
+        group_type_id = #{groupTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="createdDate != null" >
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        class_id = #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartId != null" >
+        third_part_id = #{thirdPartId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="groupKey != null" >
+        group_key = #{groupKey,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where group_id = #{groupId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.UserGroup" >
+    update user_group
+    set department_id = #{departmentId,jdbcType=BIGINT},
+      group_name = #{groupName,jdbcType=VARCHAR},
+      group_type_id = #{groupTypeId,jdbcType=BIGINT},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      class_id = #{classId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      third_part_id = #{thirdPartId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      group_key = #{groupKey,jdbcType=VARCHAR}
+    where group_id = #{groupId,jdbcType=BIGINT}
+  </update>
+</mapper>

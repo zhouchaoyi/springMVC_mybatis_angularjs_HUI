@@ -3,13 +3,8 @@ package com.dawn.bgSys.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.JWTUtils;
-import com.dawn.bgSys.dao.ICommonDao;
-import com.dawn.bgSys.dao.IDepartmentDao;
-import com.dawn.bgSys.dao.IUserDao;
-import com.dawn.bgSys.dao.IUserTypeDao;
-import com.dawn.bgSys.domain.Department;
-import com.dawn.bgSys.domain.User;
-import com.dawn.bgSys.domain.UserType;
+import com.dawn.bgSys.dao.*;
+import com.dawn.bgSys.domain.*;
 import com.dawn.bgSys.exception.OperateFailureException;
 import com.dawn.bgSys.service.IUserService;
 import com.dawn.bgSys.utils.TreeModel;
@@ -22,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhouchaoyi on 2016/4/5.
@@ -40,6 +32,12 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private IDepartmentDao departmentDao;
+
+    @Autowired
+    private IUserGroupDao userGroupDao;
+
+    @Autowired
+    private IUserGroupRelationDao userGroupRelationDao;
 
     @Autowired
     private TreeModel treeModel;
@@ -178,6 +176,7 @@ public class UserServiceImpl implements IUserService {
         }
         searchStr="%"+searchStr+"%";
         List<User> list = userDao.selectByUserType(userType,searchStr);
+
         PageInfo page = new PageInfo(list);
 
         result.put("items",list);
@@ -262,6 +261,135 @@ public class UserServiceImpl implements IUserService {
         if(!result) {
             throw new OperateFailureException(treeModel.getPrompt());
         }
+        return success;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int addUserGroup(UserGroup userGroup) throws Exception {
+        int success=0;
+        success=userGroupDao.insert(userGroup);
+        return success;
+    }
+
+    public JSONObject listUserGroup(int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        if(currentPage>0) {
+            PageHelper.startPage(currentPage, pageSize);
+        }
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<UserGroup> list = userGroupDao.select(searchStr);
+
+        List<String> ids = new ArrayList<String>();
+        List<JSONObject> listObj = new ArrayList<JSONObject>();
+        for(UserGroup userGroup : list) {
+            String id = userGroup.getGroupId()+"";
+            ids.add(id);
+            String jsonStr= JSON.toJSONString(userGroup);
+            JSONObject json=JSONObject.parseObject(jsonStr);
+            listObj.add(json);
+        }
+        List<Map> listCount = userGroupDao.selectMemberCount(ids);
+        for(JSONObject json : listObj) {
+            for(Map map : listCount) {
+                if(StringUtils.equals(json.getString("groupId"), map.get("groupId").toString())) {
+                    json.put("memberCount",map.get("memberCount").toString());
+                    break;
+                }
+            }
+        }
+
+        PageInfo page = new PageInfo(listObj);
+
+        result.put("items",listObj);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public UserGroup queryUserGroupById(String id) {
+        UserGroup userGroup=userGroupDao.selectByPrimaryKey(Long.valueOf(id));
+        return userGroup;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int updateUserGroup(UserGroup userGroup) throws Exception {
+        int success=0;
+        success=userGroupDao.updateByPrimaryKeySelective(userGroup);
+        return success;
+    }
+
+    public int deleteUserGroup(List<String> ids) {
+        int success=0;
+        success=userGroupDao.deleteByPrimaryKey(ids);
+        return success;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int addUserGroupMember(List<String> ids,String groupId) {
+        int success=0;
+        for(String id : ids) {
+            UserGroupRelation userGroupRelation = new UserGroupRelation();
+            userGroupRelation.setUserId(id);
+            userGroupRelation.setStatus(Byte.valueOf("1"));
+            userGroupRelation.setJoinDate(new Date());
+            userGroupRelation.setUserGroupId(Long.valueOf(groupId));
+            success=userGroupRelationDao.insert(userGroupRelation);
+        }
+        return success;
+    }
+
+    public JSONObject listUserForUserGroup(String groupId,int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        PageHelper.startPage(currentPage, pageSize);
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<User> list = userDao.selectUserForUserGroup(groupId, searchStr);
+
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public JSONObject listUserGroupMember(String groupId,int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        PageHelper.startPage(currentPage, pageSize);
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<Map> list = userGroupRelationDao.select(groupId, searchStr);
+
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public int deleteUserGroupMember(List<String> ids,String groupId) {
+        int success=0;
+        success=userGroupRelationDao.delete(ids, groupId);
         return success;
     }
 }

@@ -24,28 +24,22 @@
 <title></title>
 </head>
 <body ng-app="myApp" ng-controller="myCtrl" ng-init="listItems()">
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 部门管理 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 基础平台 <span class="c-gray en">&gt;</span> 用户组 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="pd-20">
 	<div class="text-c">
-		<input type="text" class="input-text" ng-model="searchStr" ng-keyup="searchKeyup($event)" style="width:250px" placeholder="输入部门名称" id="" name="">
+		<input type="text" class="input-text" ng-model="searchStr" ng-keyup="searchKeyup($event)" style="width:250px" placeholder="输入关键字" id="" name="">
 		<button class="btn btn-success" ng-click="listItems()" id="" name="">
 			<i class="Hui-iconfont">&#xe665;</i> 搜索
 		</button>
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
-			<a href="javascript:;" ng-click="addItem('添加部门','department_prop.html')" class="btn btn-primary radius">
+			<a href="javascript:;" ng-click="addItem('添加用户组','user_group_prop.html')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加
 			</a>&nbsp;
-			<a href="javascript:;" ng-click="addChildItem('添加部门','department_prop.html')" class="btn btn-primary radius">
-				<i class="Hui-iconfont">&#xe600;</i> 添加子节点
-			</a>&nbsp;
 			<font color="gray">&nbsp;选择信息：</font>
-			<a href="javascript:;" ng-click="doMove(1)" class="btn btn-primary radius">
-				上移
-			</a>&nbsp;
-			<a href="javascript:;" ng-click="doMove(-1)" class="btn btn-primary radius">
-				下移
+			<a href="javascript:;" ng-click="memberManager('管理成员','user_group_member.html')" class="btn btn-primary radius">
+				<i class="Hui-iconfont">&#xe63c;</i> 管理成员
 			</a>&nbsp;
 			<a href="javascript:;" ng-click="deleteItem()" class="btn btn-danger radius">
 				<i class="Hui-iconfont">&#xe6e2;</i> 删除
@@ -55,27 +49,31 @@
 	<table class="table table-border table-bordered table-bg">
 		<thead>
 			<tr>
-				<th scope="col" colspan="9">部门列表</th>
+				<th scope="col" colspan="9">用户组列表</th>
 			</tr>
 			<tr class="text-c">
 				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-				<th width="200">部门名</th>
-				<th width="200">部门代码</th>
-				<th width="200">备注</th>
+				<th width="200">组名称</th>
+				<th width="200">成员人数</th>
+				<th width="200">组权限</th>
+				<th width="200">说明</th>
+				<th width="70">状态</th>
 				<th width="70">操作</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr class="text-c" ng-repeat="item in items">
 				<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-				<td style="text-align: left"><a ng-bind-html="item.departmentName|html" ng-click="editItem('部门编辑','department_prop.html',item.departmentId)"></a></td>
-				<td ng-bind="item.departmentKey"></td>
+				<td><a ng-bind="item.groupName" ng-click="editItem('用户组编辑','user_group_prop.html',item.groupId)"></a></td>
+				<td ng-bind="item.memberCount"></td>
+				<td ng-bind=""></td>
 				<td ng-bind="item.remark"></td>
+				<td ng-bind="item.status==1?'启用':'禁用'" ng-class="{'1':'font_green', '0': 'font_red'}[item.status]"></td>
 				<td class="f-14">
-					<a title="编辑" href="javascript:;" ng-click="editItem('部门编辑','department_prop.html',item.departmentId)" style="text-decoration:none">
+					<a title="编辑" href="javascript:;" ng-click="editItem('用户组编辑','user_group_prop.html',item.groupId)" style="text-decoration:none">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
-					<a title="删除" href="javascript:;" ng-click="deleteItem(item.departmentId)" class="ml-5" style="text-decoration:none">
+					<a title="删除" href="javascript:;" ng-click="deleteItem(item.groupId)" class="ml-5" style="text-decoration:none">
 						<i class="Hui-iconfont">&#xe6e2;</i>
 					</a>
 				</td>
@@ -94,7 +92,7 @@
 <script type="text/javascript" src="../../js/H-ui.admin.js"></script>
 <script type="text/javascript" src="../../js/app.js"></script>
 <script type="text/javascript" src="../../js/angular_base.js"></script>
-<script type="text/javascript" src="../../js/user/department.js"></script>
+<script type="text/javascript" src="../../js/user/user_group.js"></script>
 
 </body>
 </html>

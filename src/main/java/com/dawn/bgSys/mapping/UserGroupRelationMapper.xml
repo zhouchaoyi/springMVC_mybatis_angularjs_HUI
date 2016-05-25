@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IUserGroupRelationDao" >
+
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.UserGroupRelation" >
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_group_id" property="userGroupId" jdbcType="BIGINT" />
+    <result column="join_date" property="joinDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+  </resultMap>
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.UserGroupRelation" >
+    insert into user_group_relation (user_id, user_group_id, join_date, 
+      status)
+    values (#{userId,jdbcType=VARCHAR}, #{userGroupId,jdbcType=BIGINT}, #{joinDate,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.UserGroupRelation" >
+    insert into user_group_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userGroupId != null" >
+        user_group_id,
+      </if>
+      <if test="joinDate != null" >
+        join_date,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userGroupId != null" >
+        #{userGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="joinDate != null" >
+        #{joinDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="select" resultType="hashmap" >
+    select b.user_id as userId,b.login_name as loginName,b.user_name as userName
+    from user_group_relation a
+    left join user_info b on a.user_id=b.user_id
+    where a.user_group_id=#{groupId}
+    and (b.user_name like #{searchStr} or b.login_name like #{searchStr})
+  </select>
+
+  <delete id="delete" >
+    delete from user_group_relation
+    where user_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+     and user_group_id=#{groupId}
+  </delete>
+</mapper>
