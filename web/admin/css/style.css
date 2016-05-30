@@ -5,3 +5,7 @@
 .font_green {color:green}
 #pagingDiv {text-align:center;}
 
+/*只有一个根节点，不显示 +/- 开关*/
+.ztree li span.button.switch.level0 {visibility:hidden; width:1px;}
+.ztree li ul.level0 {padding:0; background:none;}
+

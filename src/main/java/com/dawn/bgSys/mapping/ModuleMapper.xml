@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IModuleDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.Module" >
+    <id column="module_id" property="moduleId" jdbcType="BIGINT" />
+    <result column="module_name" property="moduleName" jdbcType="VARCHAR" />
+    <result column="module_code" property="moduleCode" jdbcType="VARCHAR" />
+    <result column="is_perm_only" property="isPermOnly" jdbcType="TINYINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="class_id" property="classId" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="user_type" property="userType" jdbcType="VARCHAR" />
+    <result column="b_ext" property="bExt" jdbcType="TINYINT" />
+    <result column="relation_url" property="relationUrl" jdbcType="VARCHAR" />
+    <result column="is_parent" property="isParent" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    distinct a.module_id, a.module_name, a.module_code, a.is_perm_only, a.parent_id, a.class_id, a.remark, a.icon,
+    a.url, a.status, a.user_type, a.b_ext, a.relation_url, case b.module_id when b.module_id then '1' else '0' end as is_parent
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    where a.module_id = #{moduleId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    where a.module_code = #{moduleCode}
+  </select>
+
+  <select id="select" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    where (a.module_name like #{searchStr})
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from module_info
+    where module_id = #{moduleId,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByClassId" parameterType="java.lang.String" >
+    delete from module_info
+    where class_id like #{classId}
+  </delete>
+
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.Module" >
+    insert into module_info (module_id, module_name, module_code, 
+      is_perm_only, parent_id, class_id, 
+      remark, icon, url, 
+      status, user_type, b_ext, 
+      relation_url)
+    values (#{moduleId,jdbcType=BIGINT}, #{moduleName,jdbcType=VARCHAR}, #{moduleCode,jdbcType=VARCHAR}, 
+      #{isPermOnly,jdbcType=TINYINT}, #{parentId,jdbcType=BIGINT}, #{classId,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{status,jdbcType=TINYINT}, #{userType,jdbcType=VARCHAR}, #{bExt,jdbcType=TINYINT}, 
+      #{relationUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.Module" useGeneratedKeys="true" keyProperty="moduleId">
+    insert into module_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="moduleId != null" >
+        module_id,
+      </if>
+      <if test="moduleName != null" >
+        module_name,
+      </if>
+      <if test="moduleCode != null" >
+        module_code,
+      </if>
+      <if test="isPermOnly != null" >
+        is_perm_only,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="classId != null" >
+        class_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="userType != null" >
+        user_type,
+      </if>
+      <if test="bExt != null" >
+        b_ext,
+      </if>
+      <if test="relationUrl != null" >
+        relation_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="moduleId != null" >
+        #{moduleId,jdbcType=BIGINT},
+      </if>
+      <if test="moduleName != null" >
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleCode != null" >
+        #{moduleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isPermOnly != null" >
+        #{isPermOnly,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="bExt != null" >
+        #{bExt,jdbcType=TINYINT},
+      </if>
+      <if test="relationUrl != null" >
+        #{relationUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.Module" >
+    update module_info
+    <set >
+      <if test="moduleName != null" >
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleCode != null" >
+        module_code = #{moduleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isPermOnly != null" >
+        is_perm_only = #{isPermOnly,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="classId != null" >
+        class_id = #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="bExt != null" >
+        b_ext = #{bExt,jdbcType=TINYINT},
+      </if>
+      <if test="relationUrl != null" >
+        relation_url = #{relationUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where module_id = #{moduleId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.Module" >
+    update module_info
+    set module_name = #{moduleName,jdbcType=VARCHAR},
+      module_code = #{moduleCode,jdbcType=VARCHAR},
+      is_perm_only = #{isPermOnly,jdbcType=TINYINT},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      class_id = #{classId,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      user_type = #{userType,jdbcType=VARCHAR},
+      b_ext = #{bExt,jdbcType=TINYINT},
+      relation_url = #{relationUrl,jdbcType=VARCHAR}
+    where module_id = #{moduleId,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="../../lib/html5.js"></script>
+	<script type="text/javascript" src="../../lib/respond.min.js"></script>
+	<script type="text/javascript" src="../../lib/PIE_IE678.js"></script>
+	<![endif]-->
+	<link href="../../lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+	<link href="../../lib/zTree/v3/css/demo.css" rel="stylesheet" type="text/css" />
+	<link href="../../css/H-ui.min.css" rel="stylesheet" type="text/css" />
+	<link href="../../css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+	<link href="../../css/style.css" rel="stylesheet" type="text/css" />
+	<link href="../../lib/Hui-iconfont/1.0.7/iconfont.css" rel="stylesheet" type="text/css" />
+	<!--[if IE 6]>
+	<script type="text/javascript" src="http://lib.h-ui.net/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+	<![endif]-->
+	<title></title>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl" ng-init="initData()">
+<div class="pd-20">
+	<form class="form form-horizontal" id="form-admin-add">
+		<div class="row cl">
+			<label class="form-label col-3">父节点：</label>
+			<div class="formControls col-8">
+				<ul class="list">
+					<li class="title">
+						<input id="citySel" class="input-text" type="text" readonly value="" style="width:180px;"/>
+						&nbsp;<a id="menuBtn" href="#" onclick="showMenu(); return false;">选择</a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>名称：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.moduleName" class="input-text" value="" placeholder="" datatype="*1-100" nullmsg="名称不能为空">
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>代码：</label>
+			<div class="formControls col-5">
+				<input type="text" ng-model="model.moduleCode" class="input-text" value="" placeholder="" datatype="*1-100" nullmsg="代码不能为空">
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3"><span class="c-red">*</span>节点类型：</label>
+			<div class="formControls col-5">
+				<div class="radio-box">
+					<input type="radio" id="sex-1" name="sex" value="0" ng-model="model.isPermOnly" datatype="*" nullmsg="请选择类型！">
+					<label for="sex-1">模块</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="sex-2" name="sex" value="1" ng-model="model.isPermOnly">
+					<label for="sex-2">权限</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3">通用权限：</label>
+			<div class="formControls col-3" ng-repeat="item in array.userType" >
+				<div class="check-box">
+					<input type="checkbox" ng-model="item.checked" id="{{'userType'+$index}}">
+					<label for="{{'userType'+$index}}" ng-bind="item.typeName"></label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+		<span style="color:blue;margin-left: 70px">选择为某用户类型的通用权限（此类型用户默认具有）。</span>
+
+		<div class="row cl">
+			<label class="form-label col-3">说明：</label>
+			<div class="formControls col-8">
+				<input type="text" ng-model="model.remark" class="input-text" value="" placeholder="" >
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3">模块路径：</label>
+			<div class="formControls col-8">
+				<input type="text" ng-model="model.url" class="input-text" value="" placeholder="" >
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3">关联地址：</label>
+			<div class="formControls col-8">
+				<input type="text" ng-model="model.relationUrl" class="input-text" value="" placeholder="" >
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3">类别：</label>
+			<div class="formControls col-5 ">
+				<div class="check-box">
+					<input type="checkbox" ng-model="model.bExt" id="public"  >
+					<label for="public">分类目录</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-3">状态：</label>
+			<div class="formControls col-5 ">
+				<div class="check-box">
+					<input type="checkbox" ng-model="model.status" id="public2"  >
+					<label for="public2">启用</label>
+				</div>
+			</div>
+			<div class="col-4"> </div>
+		</div>
+
+		<div class="row cl">
+			<div class="col-9 col-offset-3">
+				<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
+			</div>
+		</div>
+
+		<div id="menuContent" class="menuContent" style="display:none; position: absolute;">
+			<ul id="moduleTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+		</div>
+	</form>
+</div>
+<script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../lib/Validform/5.3.2/Validform.min.js"></script>
+<script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="../../lib/zTree/v3/js/jquery.ztree.all.min.js"></script>
+<script type="text/javascript" src="../../lib/angular.min.js"></script>
+<script type="text/javascript" src="../../js/H-ui.js"></script>
+<script type="text/javascript" src="../../js/H-ui.admin.js"></script>
+<script type="text/javascript" src="../../js/app.js"></script>
+<script type="text/javascript" src="../../js/angular_base.js"></script>
+<script type="text/javascript" src="../../js/perm/module.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#form-admin-add").Validform({
+			tiptype:2,
+			callback:function(form){
+				var appElement = document.querySelector('[ng-controller=myCtrl]');
+				var $scope = angular.element(appElement).scope();
+				$scope.submitForm();
+			}
+		});
+	});
+
+	function showMenu() {
+		var cityObj = $("#citySel");
+		var cityOffset = $("#citySel").offset();
+		$("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cityObj.outerHeight() + "px"}).slideDown("fast");
+
+		$("body").bind("mousedown", onBodyDown);
+	}
+	function hideMenu() {
+		$("#menuContent").fadeOut("fast");
+		$("body").unbind("mousedown", onBodyDown);
+	}
+	function onBodyDown(event) {
+		if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+			hideMenu();
+		}
+	}
+
+	function onClick(e, treeId, treeNode) {
+		var appElement = document.querySelector('[ng-controller=myCtrl]');
+		var $scope = angular.element(appElement).scope();
+		var zTree = $.fn.zTree.getZTreeObj("moduleTree");
+		var nodes = zTree.getSelectedNodes();
+		var v = nodes[0].name;
+		var parentId=nodes[0].id;
+		if(parentId=="-1") {
+			v="根节点";
+		}
+		var cityObj = $("#citySel");
+		cityObj.attr("value", v);
+		$scope.model.parentId=parentId;
+		//console.log($scope.model.parentId);
+	}
+</script>
+</body>
+</html>
