@@ -67,15 +67,31 @@
 <script type="text/javascript" src="../../js/perm/module.js"></script>
 <script type="text/javascript">
 	function onClick(e, treeId, treeNode) {
-		var htmlStr =  '<div>名称：{{detail.name}}</div><br>'+
-					'<div>代码：{{detail.name}}</div><br>'+
-					'<div>通用权限：{{detail.name}}</div><br>'+
-					'<div>路径：{{detail.name}}</div><br>'+
-					'<div>关联URL：{{detail.name}}</div><br>'+
-					'<div>说明：{{detail.name}}</div><br>'+
-					'<div>类别：{{detail.name}}</div><br>'+
-					'<div>状态：{{detail.name}}</div><br>';
-		$("#moduleDetail").html(htmlStr);
+		refreshDetail(treeNode);
+	}
+
+	function refreshDetail(treeNode) {
+		if(treeNode.id!="-1") {
+			var htmlStr ="";
+			if(treeNode.bExt=="分类目录"&&treeNode.moduleUrl.length==0) {
+				htmlStr = '<div>名称：' + treeNode.name + '</div><br>' +
+						'<div>代码：'+treeNode.moduleCode+'</div><br>' +
+						'<div>说明：'+treeNode.remark+'</div><br>' +
+						'<div>类别：'+treeNode.bExt+'</div><br>' +
+						'<div>状态：'+treeNode.status+'</div><br>';
+			}else {
+				htmlStr = '<div>名称：' + treeNode.name + '</div><br>' +
+						'<div>代码：'+treeNode.moduleCode+'</div><br>' +
+						'<div>通用权限：'+treeNode.userType+'</div><br>' +
+						'<div>路径：'+treeNode.moduleUrl+'</div><br>' +
+						'<div>关联URL：'+treeNode.relationUrl+'</div><br>' +
+						'<div>说明：'+treeNode.remark+'</div><br>' +
+						'<div>类别：'+treeNode.bExt+'</div><br>' +
+						'<div>状态：'+treeNode.status+'</div><br>';
+			}
+
+			$("#moduleDetail").html(htmlStr);
+		}
 	}
 </script>
 </body>

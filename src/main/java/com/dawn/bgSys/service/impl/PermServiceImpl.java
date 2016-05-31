@@ -29,6 +29,9 @@ public class PermServiceImpl implements IPermService {
     private IModuleDao moduleDao;
 
     @Autowired
+    private IUserTypeDao userTypeDao;
+
+    @Autowired
     private TreeModel treeModel;
 
     @Value("${APP_T_K}")
@@ -48,6 +51,20 @@ public class PermServiceImpl implements IPermService {
         treeModel.resetClassId(module.getModuleId()+"");
 
         Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
+        //code转换成中文字
+        List<UserType> listUserType = userTypeDao.listUserType();
+        Map<String,String> map = new HashMap<String,String>();
+        for(UserType userType : listUserType) {
+            map.put(userType.getTypeCode(),userType.getTypeName());
+        }
+        if(result.getUserType().length()>0) {
+            String[] aStr = result.getUserType().split(",");
+            for(int i=0;i<aStr.length;i++) {
+                aStr[i]=map.get(aStr[i].trim());
+            }
+            result.setUserType(StringUtils.join(aStr,","));
+        }
+
         return result;
     }
 
@@ -61,6 +78,21 @@ public class PermServiceImpl implements IPermService {
         treeModel.resetClassId(module.getModuleId()+"");
 
         Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
+
+        //code转换成中文字
+        List<UserType> listUserType = userTypeDao.listUserType();
+        Map<String,String> map = new HashMap<String,String>();
+        for(UserType userType : listUserType) {
+            map.put(userType.getTypeCode(),userType.getTypeName());
+        }
+        if(result.getUserType().length()>0) {
+            String[] aStr = result.getUserType().split(",");
+            for(int i=0;i<aStr.length;i++) {
+                aStr[i]=map.get(aStr[i].trim());
+            }
+            result.setUserType(StringUtils.join(aStr,","));
+        }
+
         return result;
     }
 
@@ -84,6 +116,22 @@ public class PermServiceImpl implements IPermService {
         }
         searchStr="%"+searchStr+"%";
         List<Module> list = moduleDao.select(searchStr);
+
+        //code转换成中文字
+        List<UserType> listUserType = userTypeDao.listUserType();
+        Map<String,String> map = new HashMap<String,String>();
+        for(UserType userType : listUserType) {
+            map.put(userType.getTypeCode(),userType.getTypeName());
+        }
+        for(Module module : list) {
+            if(module.getUserType().length()>0) {
+                String[] aStr = module.getUserType().split(",");
+                for(int i=0;i<aStr.length;i++) {
+                    aStr[i]=map.get(aStr[i].trim());
+                }
+                module.setUserType(StringUtils.join(aStr,","));
+            }
+        }
         //System.out.println(list.size());
         PageInfo page = new PageInfo(list);
 

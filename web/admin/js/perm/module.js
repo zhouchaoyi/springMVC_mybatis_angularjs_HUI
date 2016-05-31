@@ -74,6 +74,13 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 obj.id=item.moduleId;
                 obj.pId=item.parentId;
                 obj.name=item.moduleName;
+                obj.moduleCode=item.moduleCode;
+                obj.userType=item.userType;
+                obj.moduleUrl=item.url;
+                obj.relationUrl=item.relationUrl;
+                obj.remark=item.remark;
+                obj.bExt=item.bExt==1?'分类目录':'权限/模块';
+                obj.status=item.status==1?'启用':'禁用';
                 obj=$scope.setIcon(item,obj);
                 //console.log(obj);
                 zNodes.push(obj);
@@ -162,17 +169,36 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             if(node.pId==data.data.parentId) { //父节点没有变
                 var selectedNode = pTree.getSelectedNodes()[0];
                 selectedNode.name = data.data.moduleName;
+                selectedNode.moduleCode=data.data.moduleCode;
+                selectedNode.userType=data.data.userType;
+                selectedNode.moduleUrl=data.data.url;
+                selectedNode.relationUrl=data.data.relationUrl;
+                selectedNode.remark=data.data.remark;
+                selectedNode.bExt=data.data.bExt==1?'分类目录':'权限/模块';
+                selectedNode.status=data.data.status==1?'启用':'禁用';
                 selectedNode=$scope.setIcon(data.data,selectedNode);
                 pTree.updateNode(selectedNode);
+                parent.refreshDetail(selectedNode);
             }else { //父节点变了
                 var targetNode = pTree.getNodeByParam("id", data.data.parentId, null);
                 var selectedNode = pTree.getSelectedNodes()[0];
-                selectedNode.name = data.data.moduleName;
-                selectedNode=$scope.setIcon(data.data,selectedNode);
                 pTree.moveNode(targetNode, selectedNode, "inner");
+                selectedNode = pTree.getSelectedNodes()[0];
+                selectedNode.name = data.data.moduleName;
+                selectedNode.moduleCode=data.data.moduleCode;
+                selectedNode.userType=data.data.userType;
+                selectedNode.moduleUrl=data.data.url;
+                selectedNode.relationUrl=data.data.relationUrl;
+                selectedNode.remark=data.data.remark;
+                selectedNode.bExt=data.data.bExt==1?'分类目录':'权限/模块';
+                selectedNode.status=data.data.status==1?'启用':'禁用';
+                selectedNode=$scope.setIcon(data.data,selectedNode);
+                pTree.updateNode(selectedNode);
+                parent.refreshDetail(selectedNode);
             }
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
+
         }else {
             var pTree = parent.$.fn.zTree.getZTreeObj("moduleTree");
             var parentNode = pTree.getSelectedNodes()[0];
@@ -181,6 +207,13 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             node.id=item.moduleId;
             node.pId=item.parentId;
             node.name=item.moduleName;
+            node.moduleCode=item.moduleCode;
+            node.userType=item.userType;
+            node.moduleUrl=item.url;
+            node.relationUrl=item.relationUrl;
+            node.remark=item.remark;
+            node.bExt=item.bExt==1?'分类目录':'权限/模块';
+            node.status=item.status==1?'启用':'禁用';
             node=$scope.setIcon(item,node);
             //console.log(node);
             pTree.addNodes(parentNode, node);
@@ -201,8 +234,6 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                     return;
                 }
                 $scope.afterSubmitForm(data);
-                //parent.window.location.href = parent.window.location.href;
-
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
             });
@@ -212,8 +243,6 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                     return;
                 }
                 $scope.afterSubmitForm(data);
-                //parent.window.location.href = parent.window.location.href;
-
             }).error(function(data, status, headers, config) {
                 console.log("error<<<<");
             });
@@ -275,6 +304,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                     return;
                 }
                 zTreeObj.removeNode(selectedNode[0]);
+                $("#moduleDetail").html("");
             })
 
         }
