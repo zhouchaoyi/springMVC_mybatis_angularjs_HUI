@@ -18,7 +18,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }
     };
     $scope.currentPage=1;
-    $scope.pageSize=10;
+    $scope.pageSize=30;
     $scope.pages=1;
     $scope.gridPrompt=true;
     $scope.gridPromptTxt="数据加载中......";
@@ -81,141 +81,69 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     //自已定义的属性和方法
     //列表页属性
     $scope.param={};
+    $scope.param.parentClassId="";
+    $scope.param.status=false;
     $scope.orderBy="classId,1";
-    $scope.mainKey="departmentId"; //删除方法需要用到,表示根据哪个字段来删除
-    $scope.listUrl="/userMgmt/listDepartment.do";
-    $scope.deleteUrl="/userMgmt/deleteDepartment.do";
+    $scope.mainKey="itemId"; //删除和移动方法需要用到,表示根据主键来操作
+    $scope.listUrl="/permMgmt/listControlPanel.do";
+    $scope.deleteUrl="/permMgmt/deleteControlPanel.do";
+    $scope.moveUrl="/permMgmt/moveControlPanel.do";
     $scope.changeGridData=function() {
         for (var i = 0; i < $scope.items.length; i++) {
             for(var j=1;j<$scope.items[i].classId.length/10;j++){
-                $scope.items[i].departmentName="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+$scope.items[i].departmentName;
+                $scope.items[i].itemName="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+$scope.items[i].itemName;
             }
         }
 
     };
 
-    //表单页属性
-    $scope.insertUrl="/userMgmt/addDepartment.do";
-    $scope.updateUrl="/userMgmt/updateDepartment.do";
-    $scope.queryUrl="/userMgmt/queryDepartmentById.do";
-
-    $scope.model={};
-    $scope.model.id=getQueryString("id");
-    $scope.query={};
-    $scope.query.parentId=getQueryString("parentId");
-    //console.log($scope.query.parentId);
-    $scope.model.parentId = -1;
-    if($scope.query.parentId!=null) {
-        $scope.model.parentId = parseInt($scope.query.parentId);
-    }
-
-    $scope.model.isTypeOnly=false;
+    //其他属性
     $scope.options={};
-    $scope.options.dept=[];
+    $scope.options.items=[];
+
 
     //初始化数据
     $scope.initData=function() {
-        //console.log("init");
-        //编辑页面获取属性
-        if(null!=$scope.model.id&&$scope.model.id.length>0) {
-            $scope.queryModelById();
-        }
+        //显示列表
+        $scope.listItems();
+        //获取父节点信息
+        $scope.getParentItem();
+    };
 
-        //获取父部门信息
+    //获取父节点信息
+    $scope.getParentItem = function() {
+        //获取父部门信息的参数
         var param={};
         param.currentPage=-1;
         param.pageSize=-1;
         param.orderBy="classId,1";
-        BusinessService.post(myRootUrl + $scope.listUrl, param).success(function (data) {
-            if(null==data) {
-                return;
-            }
-            for (var i = 0; i < data.data.items.length; i++) {
-                for(var j=0;j<data.data.items[i].classId.length/10;j++){
-                    if(data.data.items[i].departmentName.indexOf("└")==-1) {
-                        data.data.items[i].departmentName="└"+data.data.items[i].departmentName;
-                    }
-                    if(j>0) {
-                        data.data.items[i].departmentName = "　" + data.data.items[i].departmentName;
-                    }
-                }
-            }
-            $scope.options.dept=data.data.items;
-            var data={};
-            data.departmentId=-1;
-            data.departmentName="-请选择-"
-            $scope.options.dept.unshift(data);
+        param.classLevel=1;
+        var optionValue="classId";
+        var optionLabel="itemName";
 
-        });
+        //获取父部门信息
+        $scope.loadSelectOptionData($scope.options,"items",$scope.listUrl,param,optionValue,optionLabel,true,"");
     };
 
-    $scope.queryModelById=function() {
-        var param={};
-        param.id=$scope.model.id;
-        BusinessService.post(myRootUrl+$scope.queryUrl ,param).success(function (data) {
-            //console.log(data.data);
-            $scope.model.departmentName = data.data.departmentName;
-            $scope.model.parentId = data.data.parentId;
-            $scope.model.classId = data.data.classId;
-            $scope.model.departmentKey = data.data.departmentKey;
-            $scope.model.remark = data.data.remark;
-            $scope.model.isTypeOnly = data.data.isTypeOnly==1?true:false;
-        });
-    }
-
-    $scope.beforeSubmitForm=function() {
-        return true;
-    };
-
-    $scope.submitForm=function() {
-        //console.log($scope.model);
-        if(!$scope.beforeSubmitForm()) {
-            return;
-        }
-        if(null!=$scope.model.id&&$scope.model.id.length>0) {
-            BusinessService.post(myRootUrl + $scope.updateUrl, $scope.model).success(function (data) {
-                //console.log(data);
-                if(null==data) {
-                    return;
-                }
-                parent.window.location.href = parent.window.location.href;
-
-            }).error(function(data, status, headers, config) {
-                console.log("error<<<<");
-            });
-        }else {
-            BusinessService.post(myRootUrl + $scope.insertUrl, $scope.model).success(function (data) {
-                if(null==data) {
-                    return;
-                }
-                parent.window.location.href = parent.window.location.href;
-
-            }).error(function(data, status, headers, config) {
-                console.log("error<<<<");
-            });
-        }
-
+    $scope.changeParam = function() {
+        $scope.listItems();
     };
 
     $scope.addItem=function(title,url,w,h){
-        if(!w) {
-            w=$(window).width();
-        }
-        if(!h) {
-            h = $(window).height();
-        }
-        layer_show(title,url,w,h);
-    }
-
-    $scope.addChildItem=function(title,url,w,h){
         var count=$scope.chooseCount();
         if(count>1) {
             alert("只能选择一条记录");
             return;
         }
         var parentId="";
+        var classId="";
         if(count==1) {
-            parentId=$scope.getItem("departmentId")+"";
+            parentId=$scope.getItem("itemId")+"";
+            classId=$scope.getItem("classId");
+            if(classId.length>20) {
+                alert("不能再增加子节点！请不选择节点或者选择第一、第二层的节点添加子节点！");
+                return;
+            }
         }
         if(!w) {
             w=$(window).width();
@@ -224,7 +152,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             h = $(window).height();
         }
         if(parentId.length>0) {
-            layer_show(title, url+"?parentId="+parentId, w, h);
+            layer_show(title, url+"?parentId="+parentId+"&classId="+classId, w, h);
         }else {
             layer_show(title, url, w, h);
         }
@@ -267,9 +195,17 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 if (data.data > 0) {
                     alert("删除成功");
                     $scope.listItems();
+                    if($scope.afterDeleteItem) {
+                        $scope.afterDeleteItem();
+                    }
                 }
             });
         }
+    };
+
+    $scope.afterDeleteItem = function() {
+        //获取父节点信息
+        $scope.getParentItem();
     };
 
     $scope.doMove=function(position) {
@@ -282,12 +218,11 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             alert("只能选择一条记录");
             return;
         }
-        var departmentId=$scope.getItem("departmentId")
-        var url="/userMgmt/doMoveDepartment.do";
+        var id=$scope.getItem($scope.mainKey);
         var param={};
         param.move=position;
-        param.departmentId=departmentId;
-        BusinessService.post(myRootUrl + url, param).success(function (data) {
+        param.id=id;
+        BusinessService.post(myRootUrl + $scope.moveUrl, param).success(function (data) {
             if(null==data) {
                 return;
             }
@@ -311,6 +246,32 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 return $scope.items[i][key];
             }
         }
+    };
+
+    $scope.loadSelectOptionData = function(obj,arrayName,url,param,optionValue,optionLabel,hasClassId,defaultValue) {
+        BusinessService.post(myRootUrl + url, param).success(function (data) {
+            if(null==data) {
+                return;
+            }
+            if(hasClassId) {
+                for (var i = 0; i < data.data.items.length; i++) {
+                    for (var j = 0; j < data.data.items[i].classId.length / 10; j++) {
+                        if (data.data.items[i][optionLabel].indexOf("└") == -1) {
+                            data.data.items[i][optionLabel] = "└" + data.data.items[i][optionLabel];
+                        }
+                        if (j > 0) {
+                            data.data.items[i][optionLabel] = "　" + data.data.items[i][optionLabel];
+                        }
+                    }
+                }
+            }
+            obj[arrayName]=data.data.items;
+            var data={};
+            data[optionValue]=defaultValue;
+            data[optionLabel]="-请选择-"
+            obj[arrayName].unshift(data);
+
+        });
     };
 
 }]);

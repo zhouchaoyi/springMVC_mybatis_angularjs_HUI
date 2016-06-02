@@ -166,4 +166,130 @@ public class PermController extends BaseController {
         json.put("status", Utils.getSubStatus("获取数据成功！"));
         return json.toString();
     }
+
+    @RequestMapping(value = "/listControlPanel", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listControlPanel(@RequestBody String jsonStr) throws Exception {
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        String classLevel = WebJsonUtils.getStringValue(jsonStr, "classLevel", false);
+        String status = WebJsonUtils.getBooleanValue(jsonStr, "status");
+        String parentClassId = WebJsonUtils.getStringValue(jsonStr, "parentClassId", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+
+        System.out.println("status="+status+"<<<<");
+        System.out.println("parentClassId="+parentClassId+"<<<<");
+
+        JSONObject result = this.permService.listControlPanel(currentPage, pageSize, orderBy, searchStr, classLevel,status,parentClassId);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/addControlPanel", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addControlPanel(@RequestBody String jsonStr) throws Exception {
+        String parentId = WebJsonUtils.getStringValue(jsonStr, "parentId", true);
+        String itemName = WebJsonUtils.getStringValue(jsonStr, "itemName", true);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String moduleId = WebJsonUtils.getStringValue(jsonStr, "moduleId", false);
+        String status = WebJsonUtils.getBooleanValue(jsonStr,"status");
+
+        ControlPanel panel = new ControlPanel();
+        panel.setParentId(Long.valueOf(parentId));
+        panel.setItemName(itemName);
+        panel.setRemark(remark);
+        if(StringUtils.equals("",moduleId)) {
+            panel.setModuleId(null);
+        }else {
+            panel.setModuleId(Long.valueOf(moduleId));
+        }
+        panel.setStatus(Byte.valueOf(status));
+
+        int result = this.permService.addControlPanel(panel);
+        //System.out.println("success="+success);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/updateControlPanel", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateControlPanel(@RequestBody String jsonStr) throws Exception {
+        String itemId = WebJsonUtils.getStringValue(jsonStr, "id", true);
+        String parentId = WebJsonUtils.getStringValue(jsonStr, "parentId", true);
+        String itemName = WebJsonUtils.getStringValue(jsonStr, "itemName", true);
+        String remark = WebJsonUtils.getStringValue(jsonStr, "remark", false);
+        String moduleId = WebJsonUtils.getStringValue(jsonStr, "moduleId", false);
+        String status = WebJsonUtils.getBooleanValue(jsonStr,"status");
+
+        ControlPanel panel = new ControlPanel();
+        panel.setItemId(Long.valueOf(itemId));
+        panel.setParentId(Long.valueOf(parentId));
+        panel.setItemName(itemName);
+        panel.setRemark(remark);
+        if(StringUtils.equals("",moduleId)) {
+            panel.setModuleId(null);
+        }else {
+            panel.setModuleId(Long.valueOf(moduleId));
+        }
+        panel.setStatus(Byte.valueOf(status));
+
+        int result = this.permService.updateControlPanel(panel);
+        //System.out.println("success="+success);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/queryControlPanelById", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String queryControlPanelById(@RequestBody String jsonStr) throws Exception {
+
+        String id = WebJsonUtils.getStringValue(jsonStr, "id", true);
+
+        ControlPanel result = this.permService.queryControlPanelById(id);
+
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/deleteControlPanel", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String deleteControlPanel(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.permService.deleteControlPanel(list);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/moveControlPanel", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String moveControlPanel(@RequestBody String jsonStr) throws Exception {
+        String move = WebJsonUtils.getStringValue(jsonStr, "move", true);
+        String itemId= WebJsonUtils.getStringValue(jsonStr, "id", true);
+
+        int success = this.permService.moveControlPanel(itemId, move);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
 }

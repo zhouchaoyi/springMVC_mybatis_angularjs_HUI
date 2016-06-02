@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IControlPanelDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.ControlPanel" >
+    <id column="item_id" property="itemId" jdbcType="BIGINT" />
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="class_id" property="classId" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="root_id" property="rootId" jdbcType="BIGINT" />
+    <result column="is_commend" property="isCommend" jdbcType="TINYINT" />
+    <result column="apply_range" property="applyRange" jdbcType="TINYINT" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="content_type" property="contentType" jdbcType="TINYINT" />
+    <result column="module_id" property="moduleId" jdbcType="BIGINT" />
+    <result column="link_id" property="linkId" jdbcType="BIGINT" />
+    <result column="is_completed" property="isCompleted" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="commend_date_begin" property="commendDateBegin" jdbcType="TIMESTAMP" />
+    <result column="commend_date_end" property="commendDateEnd" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="is_quick_link" property="isQuickLink" jdbcType="TINYINT" />
+    <result column="portal_icon" property="portalIcon" jdbcType="VARCHAR" />
+    <result column="module_code" property="moduleCode" jdbcType="VARCHAR" />
+    <result column="module_name" property="moduleName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    a.item_id, a.item_name, a.class_id, a.parent_id, a.root_id, a.is_commend, a.apply_range, a.user_id,
+    a.icon, a.keywords, a.content_type, a.module_id, a.link_id, a.is_completed, a.remark, a.commend_date_begin,
+    a.commend_date_end, a.status, a.is_quick_link, a.portal_icon,b.module_code,b.module_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from control_panel a
+    left join module_info b on a.module_id=b.module_id
+    where a.item_id = #{itemId,jdbcType=BIGINT}
+  </select>
+
+  <select id="select" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from control_panel a
+    left join module_info b on a.module_id=b.module_id
+    where (a.item_name like #{searchStr})
+    <if test="classLength!= null" >
+        and length(a.class_id)&lt;=#{classLength}
+    </if>
+    <if test='status == "0"' >
+      and a.status=1
+    </if>
+    <if test="parentClassId != ''" >
+      and a.class_id like #{parentClassId}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" >
+    delete from control_panel
+    where item_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.ControlPanel" >
+    insert into control_panel (item_id, item_name, class_id, 
+      parent_id, root_id, is_commend, 
+      apply_range, user_id, icon, 
+      keywords, content_type, module_id, 
+      link_id, is_completed, remark, 
+      commend_date_begin, commend_date_end, status, 
+      is_quick_link, portal_icon)
+    values (#{itemId,jdbcType=BIGINT}, #{itemName,jdbcType=VARCHAR}, #{classId,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=BIGINT}, #{rootId,jdbcType=BIGINT}, #{isCommend,jdbcType=TINYINT}, 
+      #{applyRange,jdbcType=TINYINT}, #{userId,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
+      #{keywords,jdbcType=VARCHAR}, #{contentType,jdbcType=TINYINT}, #{moduleId,jdbcType=BIGINT}, 
+      #{linkId,jdbcType=BIGINT}, #{isCompleted,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, 
+      #{commendDateBegin,jdbcType=TIMESTAMP}, #{commendDateEnd,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{isQuickLink,jdbcType=TINYINT}, #{portalIcon,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.ControlPanel" useGeneratedKeys="true" keyProperty="itemId">
+    insert into control_panel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="itemId != null" >
+        item_id,
+      </if>
+      <if test="itemName != null" >
+        item_name,
+      </if>
+      <if test="classId != null" >
+        class_id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="rootId != null" >
+        root_id,
+      </if>
+      <if test="isCommend != null" >
+        is_commend,
+      </if>
+      <if test="applyRange != null" >
+        apply_range,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="keywords != null" >
+        keywords,
+      </if>
+      <if test="contentType != null" >
+        content_type,
+      </if>
+      <if test="moduleId != null" >
+        module_id,
+      </if>
+      <if test="linkId != null" >
+        link_id,
+      </if>
+      <if test="isCompleted != null" >
+        is_completed,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="commendDateBegin != null" >
+        commend_date_begin,
+      </if>
+      <if test="commendDateEnd != null" >
+        commend_date_end,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="isQuickLink != null" >
+        is_quick_link,
+      </if>
+      <if test="portalIcon != null" >
+        portal_icon,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="itemId != null" >
+        #{itemId,jdbcType=BIGINT},
+      </if>
+      <if test="itemName != null" >
+        #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null" >
+        #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="rootId != null" >
+        #{rootId,jdbcType=BIGINT},
+      </if>
+      <if test="isCommend != null" >
+        #{isCommend,jdbcType=TINYINT},
+      </if>
+      <if test="applyRange != null" >
+        #{applyRange,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="contentType != null" >
+        #{contentType,jdbcType=TINYINT},
+      </if>
+      <if test="moduleId != null" >
+        #{moduleId,jdbcType=BIGINT},
+      </if>
+      <if test="linkId != null" >
+        #{linkId,jdbcType=BIGINT},
+      </if>
+      <if test="isCompleted != null" >
+        #{isCompleted,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="commendDateBegin != null" >
+        #{commendDateBegin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commendDateEnd != null" >
+        #{commendDateEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="isQuickLink != null" >
+        #{isQuickLink,jdbcType=TINYINT},
+      </if>
+      <if test="portalIcon != null" >
+        #{portalIcon,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.ControlPanel" >
+    update control_panel
+    <set >
+      <if test="itemName != null" >
+        item_name = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null" >
+        class_id = #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="rootId != null" >
+        root_id = #{rootId,jdbcType=BIGINT},
+      </if>
+      <if test="isCommend != null" >
+        is_commend = #{isCommend,jdbcType=TINYINT},
+      </if>
+      <if test="applyRange != null" >
+        apply_range = #{applyRange,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="contentType != null" >
+        content_type = #{contentType,jdbcType=TINYINT},
+      </if>
+      <if test="moduleId != null" >
+        module_id = #{moduleId,jdbcType=BIGINT},
+      </if>
+      <if test="linkId != null" >
+        link_id = #{linkId,jdbcType=BIGINT},
+      </if>
+      <if test="isCompleted != null" >
+        is_completed = #{isCompleted,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="commendDateBegin != null" >
+        commend_date_begin = #{commendDateBegin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commendDateEnd != null" >
+        commend_date_end = #{commendDateEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="isQuickLink != null" >
+        is_quick_link = #{isQuickLink,jdbcType=TINYINT},
+      </if>
+      <if test="portalIcon != null" >
+        portal_icon = #{portalIcon,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where item_id = #{itemId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.ControlPanel" >
+    update control_panel
+    set item_name = #{itemName,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      root_id = #{rootId,jdbcType=BIGINT},
+      is_commend = #{isCommend,jdbcType=TINYINT},
+      apply_range = #{applyRange,jdbcType=TINYINT},
+      user_id = #{userId,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR},
+      content_type = #{contentType,jdbcType=TINYINT},
+      module_id = #{moduleId,jdbcType=BIGINT},
+      link_id = #{linkId,jdbcType=BIGINT},
+      is_completed = #{isCompleted,jdbcType=TINYINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      commend_date_begin = #{commendDateBegin,jdbcType=TIMESTAMP},
+      commend_date_end = #{commendDateEnd,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      is_quick_link = #{isQuickLink,jdbcType=TINYINT},
+      portal_icon = #{portalIcon,jdbcType=VARCHAR}
+    where item_id = #{itemId,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateStatusByClassId" >
+      update control_panel
+      set status=#{status}
+      where class_id like #{classId}
+  </update>
+</mapper>
