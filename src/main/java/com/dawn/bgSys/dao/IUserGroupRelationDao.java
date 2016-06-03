@@ -14,4 +14,10 @@ public interface IUserGroupRelationDao {
     List<Map> select(@Param("groupId")String groupId,@Param("searchStr")String searchStr);
 
     int delete(@Param("list")List<String> ids,@Param("groupId")String groupId);
+
+    int deleteByUserId(@Param("list")List<String> ids,@Param("userId")String userId);
+
+    List<Map> selectUserJoinGroup(@Param("userId")String userId,@Param("searchStr")String searchStr);
+
+    List<Map> selectGroupByUserId(List<String> ids);
 }

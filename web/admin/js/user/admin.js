@@ -30,7 +30,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         $scope.param.orderBy=$scope.orderBy;
         $scope.param.searchStr=$scope.searchStr;
         BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
-            //console.log(data);
+            console.log(data);
             if(null==data) {
                 return;
             }
@@ -43,6 +43,9 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             $scope.items = data.data.items;
             for (var i = 0; i < $scope.items.length; i++) {
                 $scope.items[i].checked = false;
+            }
+            if($scope.changeGridData) {
+                $scope.changeGridData();
             }
             $scope.pages = data.data.pages;
             if ($scope.pages > 1) {
@@ -81,6 +84,16 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     $scope.param.userType="admin";
     $scope.orderBy="userId,-1";
     $scope.listUrl="/userMgmt/listUserByType.do";
+    $scope.changeGridData=function() {
+        for (var i = 0; i < $scope.items.length; i++) {
+            var tempStr="";
+            for(var j=0;j<$scope.items[i].userGroup.length;j++){
+                tempStr+="<i class='Hui-iconfont'>&#xe62b;</i>"+$scope.items[i].userGroup[j].groupName+"&nbsp;&nbsp;";
+            }
+            $scope.items[i].userGroup=tempStr;
+        }
+
+    };
 
     //表单页属性
     $scope.insertUrl="/userMgmt/addUser.do";
@@ -164,6 +177,24 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
 
     };
 
+    $scope.joinGroup = function() {
+        var count=$scope.chooseCount();
+        if(count==0) {
+            alert("请选择记录");
+            return;
+        }
+        if(count>1) {
+            alert("只能选择一条记录");
+            return;
+        }
+        var userId=$scope.getItem($scope.mainKey);
+        var loginName=$scope.getItem("loginName");
+        var url = "user_join_group.html?userId="+userId+"&loginName="+encodeURIComponent(loginName);
+        var w=$(window).width();
+        var h=$(window).height();
+        $scope.layer_show("用户组",url,w,h);
+    };
+
     $scope.addItem=function(title,url,w,h){
         layer_show(title,url,w,h);
     }
@@ -205,7 +236,51 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }
     };
 
+    $scope.chooseCount=function() {
+        var count=0;
+        for(var i=0;i<$scope.items.length;i++) {
+            if($scope.items[i].checked==true) {
+                count++;
+            }
+        }
+        return count;
+    };
 
+    $scope.getItem=function(key) {
+        for(var i=0;i<$scope.items.length;i++) {
+            if($scope.items[i].checked==true) {
+                return $scope.items[i][key];
+            }
+        }
+    };
+
+    $scope.layer_show=function(title,url,w,h){
+        if (title == null || title == '') {
+            title=false;
+        };
+        if (url == null || url == '') {
+            url="404.html";
+        };
+        if (w == null || w == '') {
+            w=800;
+        };
+        if (h == null || h == '') {
+            h=($(window).height() - 50);
+        };
+        layer.open({
+            type: 2,
+            area: [w+'px', h +'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shade:0.4,
+            title: title,
+            content: url,
+            cancel: function(index){
+                $scope.listItems();
+                return true;
+            }
+        });
+    };
 
 }]);
 

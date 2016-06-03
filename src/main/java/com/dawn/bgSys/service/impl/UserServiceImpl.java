@@ -175,11 +175,20 @@ public class UserServiceImpl implements IUserService {
             PageHelper.orderBy(orderByStr);
         }
         searchStr="%"+searchStr+"%";
+
+        //Mybatis分页插件不支持关联结果查询，所以先单表分页查询，然后根据查出来的id再关联结果查询一下
         List<User> list = userDao.selectByUserType(userType,searchStr);
+
+        List<String> ids = new ArrayList<String>();
+        for(User user : list) {
+            String id = user.getUserId();
+            ids.add(id);
+        }
+        List<User> list2 = userDao.selectByUserIds(ids);
 
         PageInfo page = new PageInfo(list);
 
-        result.put("items",list);
+        result.put("items",list2);
         result.put("currentPage",page.getPageNum());
         result.put("pageSize",page.getPageSize());
         result.put("total",page.getTotal());
@@ -390,6 +399,68 @@ public class UserServiceImpl implements IUserService {
     public int deleteUserGroupMember(List<String> ids,String groupId) {
         int success=0;
         success=userGroupRelationDao.delete(ids, groupId);
+        return success;
+    }
+
+    public JSONObject listUserJoinGroup(String userId,int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        PageHelper.startPage(currentPage, pageSize);
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<Map> list = userGroupRelationDao.selectUserJoinGroup(userId, searchStr);
+
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public JSONObject listUserGroupForUser(String userId,int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        PageHelper.startPage(currentPage, pageSize);
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<UserGroup> list = userGroupDao.selectUserGroupForUser(userId, searchStr);
+
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int joinGroup(List<String> ids,String userId) {
+        int success=0;
+        for(String id : ids) {
+            UserGroupRelation userGroupRelation = new UserGroupRelation();
+            userGroupRelation.setUserId(userId);
+            userGroupRelation.setStatus(Byte.valueOf("1"));
+            userGroupRelation.setJoinDate(new Date());
+            userGroupRelation.setUserGroupId(Long.valueOf(id));
+            success=userGroupRelationDao.insert(userGroupRelation);
+        }
+        return success;
+    }
+
+    public int cancelJoinGroup(List<String> ids,String userId) {
+        int success=0;
+        success=userGroupRelationDao.deleteByUserId(ids, userId);
         return success;
     }
 }

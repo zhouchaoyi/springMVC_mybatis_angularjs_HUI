@@ -44,6 +44,15 @@
     group by a.group_id
   </select>
 
+  <select id="selectUserGroupForUser" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from user_group
+    where
+    (group_name like #{searchStr})
+    and group_id not in (select user_group_id from user_group_relation where user_id=#{userId})
+  </select>
+
   <delete id="deleteByPrimaryKey" >
     delete from user_group
     where group_id in

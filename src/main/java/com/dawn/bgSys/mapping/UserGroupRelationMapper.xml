@@ -54,6 +54,24 @@
     and (b.user_name like #{searchStr} or b.login_name like #{searchStr})
   </select>
 
+  <select id="selectUserJoinGroup" resultType="hashmap" >
+    select b.group_id as groupId,b.group_name as groupName,b.remark
+    from user_group_relation a
+    left join user_group b on a.user_group_id=b.group_id
+    where a.user_id=#{userId}
+    and (b.group_name like #{searchStr})
+  </select>
+
+  <select id="selectGroupByUserId" resultType="hashmap" >
+    select a.user_id as userId,b.group_id as groupId,b.group_name as groupName
+    from user_group_relation a
+    left join user_group b on a.user_group_id=b.group_id
+    where a.user_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
   <delete id="delete" >
     delete from user_group_relation
     where user_id in
@@ -61,5 +79,14 @@
       #{item}
     </foreach>
      and user_group_id=#{groupId}
+  </delete>
+
+  <delete id="deleteByUserId" >
+    delete from user_group_relation
+    where user_group_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and user_id=#{userId}
   </delete>
 </mapper>

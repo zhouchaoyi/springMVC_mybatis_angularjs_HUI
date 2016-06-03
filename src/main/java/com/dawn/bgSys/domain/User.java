@@ -1,6 +1,7 @@
 package com.dawn.bgSys.domain;
 
 import java.util.Date;
+import java.util.List;
 
 public class User {
     private String userId;
@@ -50,6 +51,16 @@ public class User {
     private String idCard;
 
     private int modifyFlag;
+
+    private List<UserGroup> userGroup;
+
+    public List<UserGroup> getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(List<UserGroup> userGroup) {
+        this.userGroup = userGroup;
+    }
 
     public String getUserId() {
         return userId;

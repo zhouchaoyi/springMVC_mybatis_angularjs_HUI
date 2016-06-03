@@ -571,4 +571,74 @@ public class UserController extends BaseController {
         return json.toString();
     }
 
+    @RequestMapping(value = "/listUserJoinGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listUserJoinGroup(@RequestBody String jsonStr) throws Exception {
+        String userId = WebJsonUtils.getStringValue(jsonStr, "userId", true);
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserJoinGroup(userId, currentPage, pageSize, orderBy, searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listUserGroupForUser", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listUserGroupForUser(@RequestBody String jsonStr) throws Exception {
+        String userId = WebJsonUtils.getStringValue(jsonStr, "userId", true);
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserGroupForUser(userId, currentPage, pageSize, orderBy, searchStr);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+
+    @RequestMapping(value = "/joinGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String joinGroup(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String userId = WebJsonUtils.getStringValue(jsonStr, "userId", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.joinGroup(list, userId);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/cancelJoinGroup", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String cancelJoinGroup(@RequestBody String jsonStr) throws Exception {
+        String ids = WebJsonUtils.getStringValue(jsonStr, "ids", true);
+        String userId = WebJsonUtils.getStringValue(jsonStr, "userId", true);
+        String[] array=ids.split(",");
+        List<String> list = new ArrayList<String>();
+        Collections.addAll(list, array);
+
+        int success = this.userService.cancelJoinGroup(list, userId);
+
+        JSONObject json = new JSONObject();
+        json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
 }

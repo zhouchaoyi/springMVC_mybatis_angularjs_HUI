@@ -26,6 +26,10 @@
     <result column="theme_index" property="themeIndex" jdbcType="VARCHAR" />
     <result column="id_card" property="idCard" jdbcType="VARCHAR" />
     <result column="modify_flag" property="modifyFlag" jdbcType="BIGINT" />
+    <collection property="userGroup" ofType="com.dawn.bgSys.domain.UserGroup">
+      <id property="groupId" column="group_id" />
+      <result property="groupName" column="group_name" />
+    </collection>
   </resultMap>
   <sql id="Base_Column_List" >
     user_id, login_name, user_name, registed_date, login_password, user_type, third_part_id, 
@@ -39,6 +43,14 @@
     user_score, total_user_score, user_day, login_date, sign_date, id_card_type, theme_index,
     id_card,modify_flag
   </sql>
+
+  <sql id="Column_List_With_Group" >
+    a.user_id, login_name, user_name, registed_date, login_password, user_type, a.third_part_id,
+    last_login, last_logout, login_flag, public_account, a.status, search_txt, sex, a.department_id,
+    user_score, total_user_score, user_day, login_date, sign_date, id_card_type, theme_index,
+    id_card,modify_flag,c.group_id,c.group_name
+  </sql>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
@@ -62,6 +74,19 @@
       user_type = #{userType} and
     </if>
      (user_name like #{searchStr} or login_name like #{searchStr})
+  </select>
+
+  <select id="selectByUserIds" resultMap="BaseResultMap" >
+    select
+    <include refid="Column_List_With_Group" />
+    from user_info a
+    left join user_group_relation b on a.user_id=b.user_id
+    left join user_group c on c.group_id=b.user_group_id
+    where a.user_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    order by a.user_id desc
   </select>
 
   <select id="selectUserByNameAndPass" resultMap="BaseResultMap" >

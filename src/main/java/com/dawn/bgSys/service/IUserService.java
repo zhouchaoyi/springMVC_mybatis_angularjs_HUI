@@ -70,4 +70,12 @@ public interface IUserService {
     public JSONObject listUserGroupMember(String groupId,int currentPage,int pageSize,String orderBy,String searchStr);
 
     public int deleteUserGroupMember(List<String> ids,String groupId);
+
+    public JSONObject listUserJoinGroup(String userId,int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public JSONObject listUserGroupForUser(String userId,int currentPage,int pageSize,String orderBy,String searchStr);
+
+    public int joinGroup(List<String> ids,String userId);
+
+    public int cancelJoinGroup(List<String> ids,String userId);
 }

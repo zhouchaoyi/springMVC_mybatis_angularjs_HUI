@@ -181,9 +181,6 @@ public class PermController extends BaseController {
             orderBy=Utils.transOrderByStr(orderBy);
         }
 
-        System.out.println("status="+status+"<<<<");
-        System.out.println("parentClassId="+parentClassId+"<<<<");
-
         JSONObject result = this.permService.listControlPanel(currentPage, pageSize, orderBy, searchStr, classLevel,status,parentClassId);
         JSONObject json = new JSONObject();
         json.put("data", result);

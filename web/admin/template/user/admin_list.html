@@ -36,6 +36,13 @@
 		<span class="l">
 			<a href="javascript:;" ng-click="addItem('添加管理员','admin_prop.html','800','500')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加管理员
+			</a>
+			&nbsp;&nbsp;选择用户：&nbsp;
+			<a href="javascript:;" ng-click="joinGroup()" class="btn btn-primary radius">
+				 所属用户组
+			</a>&nbsp;
+			<a href="javascript:;" ng-click="addItem('设置权限','admin_prop.html','800','500')" class="btn btn-primary radius">
+				 设置权限
 			</a>&nbsp;
 			<a href="javascript:;" ng-click="deleteItem()" class="btn btn-danger radius">
 				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除
@@ -50,11 +57,11 @@
 			<tr class="text-c">
 				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
 				<th width="200">登录名</th>
-				<th width="200">密码</th>
-				<th width="200">用户名</th>
+				<th width="100">密码</th>
+				<th width="100">用户名</th>
 				<th width="200">证件号</th>
-				<th width="70">性别</th>
-				<th width="200">所属组</th>
+				<th width="50">性别</th>
+				<th width="400">所属组</th>
 				<th width="70">状态</th>
 				<th width="70">操作</th>
 			</tr>
@@ -67,7 +74,7 @@
 				<td ng-bind="item.userName"></td>
 				<td ng-bind="item.idCard"></td>
 				<td ng-bind="item.sex==0?'男':'女'"></td>
-				<td></td>
+				<td ng-bind-html="item.userGroup|html"></td>
 				<td ng-bind="item.status==1?'启用':'禁用'" ng-class="{'1':'font_green', '0': 'font_red'}[item.status]"></td>
 				<td class="f-14">
 					<a title="编辑" href="javascript:;" ng-click="editItem('管理员编辑','admin_prop.html',item.userId)" style="text-decoration:none">

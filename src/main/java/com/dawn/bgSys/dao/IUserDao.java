@@ -30,4 +30,5 @@ public interface IUserDao {
 
     List<User> selectUserForUserGroup(@Param("groupId")String groupId,@Param("searchStr")String searchStr);
 
+    List<User> selectByUserIds(List<String> ids);
 }

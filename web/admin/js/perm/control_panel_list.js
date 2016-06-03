@@ -118,6 +118,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         param.pageSize=-1;
         param.orderBy="classId,1";
         param.classLevel=1;
+        param.status=$scope.param.status;
         var optionValue="classId";
         var optionLabel="itemName";
 
@@ -127,6 +128,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
 
     $scope.changeParam = function() {
         $scope.listItems();
+        $scope.getParentItem();
     };
 
     $scope.addItem=function(title,url,w,h){

@@ -23,4 +23,6 @@ public interface IUserGroupDao {
     int updateByPrimaryKey(UserGroup record);
 
     List<Map> selectMemberCount(List<String> ids);
+
+    List<UserGroup> selectUserGroupForUser(@Param("userId")String groupId,@Param("searchStr")String searchStr);
 }
