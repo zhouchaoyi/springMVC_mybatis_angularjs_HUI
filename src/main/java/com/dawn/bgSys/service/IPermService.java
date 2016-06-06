@@ -11,9 +11,11 @@ import java.util.List;
 public interface IPermService {
     public Module addModule(Module module);
 
-    public Module updateModule(Module module);
+    public JSONObject updateModule(Module module);
 
-    public JSONObject listModule(int currentPage,int pageSize,String orderBy,String searchStr);
+    public JSONObject listModule(int currentPage,int pageSize,String orderBy,String searchStr,String status,String parentClassId);
+
+    public JSONObject listModuleForPerm(int currentPage,int pageSize,String orderBy,String searchStr,String permUserId,String permType);
 
     public int deleteModule(String moduleId);
 
@@ -32,4 +34,6 @@ public interface IPermService {
     public int deleteControlPanel(List<String> ids);
 
     public int moveControlPanel(String itemId,String move);
+
+    public int addPerm(String id,String type,String moduleIds);
 }

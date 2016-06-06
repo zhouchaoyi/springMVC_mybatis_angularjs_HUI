@@ -188,6 +188,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         param.pageSize=-1;
         param.orderBy="classId,1";
         param.searchStr="";
+        param.status="1";
         var url="/permMgmt/listModule.do";
         BusinessService.post(myRootUrl + url, param).success(function (data) {
             if(null==data) {

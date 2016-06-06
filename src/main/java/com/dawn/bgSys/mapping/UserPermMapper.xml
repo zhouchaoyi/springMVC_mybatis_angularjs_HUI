@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dawn.bgSys.dao.IUserPermDao" >
+  <resultMap id="BaseResultMap" type="com.dawn.bgSys.domain.UserPerm" >
+    <id column="perm_id" property="permId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_group_id" property="userGroupId" jdbcType="BIGINT" />
+    <result column="is_user_group" property="isUserGroup" jdbcType="TINYINT" />
+    <result column="module_id" property="moduleId" jdbcType="BIGINT" />
+    <result column="can_inherit" property="canInherit" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    perm_id, user_id, user_group_id, is_user_group, module_id, can_inherit
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_perm
+    where perm_id = #{permId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from user_perm
+    where perm_id = #{permId,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="delete" >
+    delete from user_perm where
+    <if test='type == "1"' >
+       user_group_id = #{id}
+    </if>
+  </delete>
+
+  <insert id="insert" parameterType="com.dawn.bgSys.domain.UserPerm" >
+    insert into user_perm (perm_id, user_id, user_group_id, 
+      is_user_group, module_id, can_inherit
+      )
+    values (#{permId,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR}, #{userGroupId,jdbcType=BIGINT}, 
+      #{isUserGroup,jdbcType=TINYINT}, #{moduleId,jdbcType=BIGINT}, #{canInherit,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dawn.bgSys.domain.UserPerm" >
+    insert into user_perm
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="permId != null" >
+        perm_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userGroupId != null" >
+        user_group_id,
+      </if>
+      <if test="isUserGroup != null" >
+        is_user_group,
+      </if>
+      <if test="moduleId != null" >
+        module_id,
+      </if>
+      <if test="canInherit != null" >
+        can_inherit,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="permId != null" >
+        #{permId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userGroupId != null" >
+        #{userGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="isUserGroup != null" >
+        #{isUserGroup,jdbcType=TINYINT},
+      </if>
+      <if test="moduleId != null" >
+        #{moduleId,jdbcType=BIGINT},
+      </if>
+      <if test="canInherit != null" >
+        #{canInherit,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dawn.bgSys.domain.UserPerm" >
+    update user_perm
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userGroupId != null" >
+        user_group_id = #{userGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="isUserGroup != null" >
+        is_user_group = #{isUserGroup,jdbcType=TINYINT},
+      </if>
+      <if test="moduleId != null" >
+        module_id = #{moduleId,jdbcType=BIGINT},
+      </if>
+      <if test="canInherit != null" >
+        can_inherit = #{canInherit,jdbcType=TINYINT},
+      </if>
+    </set>
+    where perm_id = #{permId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dawn.bgSys.domain.UserPerm" >
+    update user_perm
+    set user_id = #{userId,jdbcType=VARCHAR},
+      user_group_id = #{userGroupId,jdbcType=BIGINT},
+      is_user_group = #{isUserGroup,jdbcType=TINYINT},
+      module_id = #{moduleId,jdbcType=BIGINT},
+      can_inherit = #{canInherit,jdbcType=TINYINT}
+    where perm_id = #{permId,jdbcType=BIGINT}
+  </update>
+</mapper>

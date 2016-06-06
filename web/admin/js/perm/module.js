@@ -100,6 +100,49 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         });
     };
 
+    //加载子节点数据
+    $scope.loadChildNode=function(parentClassId,parentNode,treeObj) {
+        var param={};
+        param.currentPage=-1;
+        param.pageSize=-1;
+        param.orderBy="classId,1";
+        param.searchStr="";
+        param.parentClassId=parentClassId;
+        BusinessService.post(myRootUrl + $scope.listUrl, param).success(function (data) {
+            if(null==data) {
+                return;
+            }
+            //console.log(data);
+            var childNodes=[];
+            for(var i=0;i<data.data.items.length;i++) {
+                var item=data.data.items[i];
+                var obj={};
+                obj.id=item.moduleId;
+                obj.pId=item.parentId;
+                obj.name=item.moduleName;
+                obj.moduleCode=item.moduleCode;
+                obj.userType=item.userType;
+                obj.moduleUrl=item.url;
+                obj.relationUrl=item.relationUrl;
+                obj.remark=item.remark;
+                obj.bExt=item.bExt==1?'分类目录':'权限/模块';
+                obj.status=item.status==1?'启用':'禁用';
+                obj=$scope.setIcon(item,obj);
+                //console.log(obj);
+                childNodes.push(obj);
+            }
+            var nodeIsOpen=parentNode.open;
+            treeObj.removeChildNodes(parentNode);
+            if(nodeIsOpen) {
+                treeObj.addNodes(parentNode, childNodes);
+            }else {
+                treeObj.addNodes(parentNode, childNodes,true);
+            }
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+        });
+    };
+
 
     //获取用户类别信息
     $scope.loadUserType=function(userTypeStr) {
@@ -164,7 +207,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
 
     $scope.afterSubmitForm = function(data) {
         if(null!=$scope.model.id&&$scope.model.id.length>0) {
-            var pTree = parent.$.fn.zTree.getZTreeObj("moduleTree");;
+            var pTree = parent.$.fn.zTree.getZTreeObj("moduleTree");
             var node = pTree.getNodeByParam("id", $scope.model.id, null);
             if(node.pId==data.data.parentId) { //父节点没有变
                 var selectedNode = pTree.getSelectedNodes()[0];
@@ -196,8 +239,14 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 pTree.updateNode(selectedNode);
                 parent.refreshDetail(selectedNode);
             }
-            var index = parent.layer.getFrameIndex(window.name);
-            parent.layer.close(index);
+
+            if(data.data.hasDiffStatusChild=="1") { //有不同状态（启用、禁用）的子节点
+                //console.log("有不同状态（启用、禁用）的子节点");
+                $scope.loadChildNode(data.data.classId,node,pTree);
+            }else {
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            }
 
         }else {
             var pTree = parent.$.fn.zTree.getZTreeObj("moduleTree");

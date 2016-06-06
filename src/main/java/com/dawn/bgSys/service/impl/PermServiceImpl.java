@@ -1,11 +1,14 @@
 package com.dawn.bgSys.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.dao.IControlPanelDao;
 import com.dawn.bgSys.dao.IModuleDao;
+import com.dawn.bgSys.dao.IUserPermDao;
 import com.dawn.bgSys.dao.IUserTypeDao;
 import com.dawn.bgSys.domain.ControlPanel;
 import com.dawn.bgSys.domain.Module;
+import com.dawn.bgSys.domain.UserPerm;
 import com.dawn.bgSys.domain.UserType;
 import com.dawn.bgSys.exception.OperateFailureException;
 import com.dawn.bgSys.service.IPermService;
@@ -36,6 +39,9 @@ public class PermServiceImpl implements IPermService {
 
     @Autowired
     private IControlPanelDao controlPanelDao;
+
+    @Autowired
+    private IUserPermDao userPermDao;
 
     @Autowired
     private TreeModel treeModel;
@@ -75,7 +81,7 @@ public class PermServiceImpl implements IPermService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Module updateModule(Module module) {
+    public JSONObject updateModule(Module module) {
         //验证代码是否重复
         checkRepeatCode(module);
         moduleDao.updateByPrimaryKeySelective(module);
@@ -84,6 +90,25 @@ public class PermServiceImpl implements IPermService {
         treeModel.resetClassId(module.getModuleId()+"");
 
         Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
+
+        String hasDiffStatusChild="0"; //是否有不同状态的子节点，如果有，前端需要重新加载子节点
+        if(StringUtils.equals("1",result.getIsParent())) {
+            String checkStatus = "";
+            if(result.getStatus()==1) {
+                checkStatus="0";
+            }else if(result.getStatus()==0) {
+                checkStatus="1";
+            }
+            List<Map> list = moduleDao.selectStatusByClassId(checkStatus, result.getClassId() + "%");
+            if(null!=list&&list.size()>0) {
+                hasDiffStatusChild="1";
+            }
+        }
+
+        //更新子节点的状态
+        if(StringUtils.equals("1",result.getIsParent())) {
+            moduleDao.updateStatusByClassId(result.getStatus(),result.getClassId()+"%");
+        }
 
         //code转换成中文字
         List<UserType> listUserType = userTypeDao.listUserType();
@@ -99,7 +124,10 @@ public class PermServiceImpl implements IPermService {
             result.setUserType(StringUtils.join(aStr,","));
         }
 
-        return result;
+        String jsonStr= JSON.toJSONString(result);
+        JSONObject json=JSONObject.parseObject(jsonStr);
+        json.put("hasDiffStatusChild",hasDiffStatusChild);
+        return json;
     }
 
     public boolean checkRepeatCode(Module module) {
@@ -111,7 +139,7 @@ public class PermServiceImpl implements IPermService {
         return result;
     }
 
-    public JSONObject listModule(int currentPage,int pageSize,String orderByStr,String searchStr) {
+    public JSONObject listModule(int currentPage,int pageSize,String orderByStr,String searchStr,String status,String parentClassId) {
         JSONObject result=new JSONObject();
 
         if(currentPage>0) {
@@ -121,7 +149,7 @@ public class PermServiceImpl implements IPermService {
             PageHelper.orderBy(orderByStr);
         }
         searchStr="%"+searchStr+"%";
-        List<Module> list = moduleDao.select(searchStr);
+        List<Module> list = moduleDao.select(searchStr,status,parentClassId+"%",parentClassId);
 
         //code转换成中文字
         List<UserType> listUserType = userTypeDao.listUserType();
@@ -136,6 +164,45 @@ public class PermServiceImpl implements IPermService {
                     aStr[i]=map.get(aStr[i].trim());
                 }
                 module.setUserType(StringUtils.join(aStr,","));
+            }
+        }
+        //System.out.println(list.size());
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
+    }
+
+    public JSONObject listModuleForPerm(int currentPage,int pageSize,String orderByStr,String searchStr,String permUserId,String permType) {
+        JSONObject result=new JSONObject();
+
+        if(currentPage>0) {
+            PageHelper.startPage(currentPage, pageSize);
+        }
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<Map> list = moduleDao.selectForPerm(searchStr, permUserId, permType);
+
+        //code转换成中文字
+        List<UserType> listUserType = userTypeDao.listUserType();
+        Map<String,String> map = new HashMap<String,String>();
+        for(UserType userType : listUserType) {
+            map.put(userType.getTypeCode(),userType.getTypeName());
+        }
+        for(Map hashMap : list) {
+            if(hashMap.get("userType").toString().length()>0) {
+                String[] aStr = hashMap.get("userType").toString().split(",");
+                for(int i=0;i<aStr.length;i++) {
+                    aStr[i]=map.get(aStr[i].trim());
+                }
+                hashMap.put("userType",StringUtils.join(aStr,","));
             }
         }
         //System.out.println(list.size());
@@ -264,5 +331,29 @@ public class PermServiceImpl implements IPermService {
             throw new OperateFailureException(treeModel.getPrompt());
         }
         return success;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int addPerm(String id,String type,String moduleIds) {
+        int result=0;
+
+        //删除权限
+        userPermDao.delete(id, type);
+
+        //添加权限
+        if(StringUtils.length(moduleIds)>0) {
+            if (StringUtils.equals("1", type)) { //用户组
+                String[] aStr = moduleIds.split(",");
+                for (String moduleId : aStr) {
+                    UserPerm userPerm = new UserPerm();
+                    userPerm.setModuleId(Long.valueOf(moduleId));
+                    userPerm.setUserGroupId(Long.valueOf(id));
+                    userPerm.setCanInherit(Byte.valueOf("1"));
+                    userPerm.setIsUserGroup(Integer.valueOf(type));
+                    result = userPermDao.insertSelective(userPerm);
+                }
+            }
+        }
+        return result;
     }
 }

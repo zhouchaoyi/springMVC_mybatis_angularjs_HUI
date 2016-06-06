@@ -223,6 +223,31 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }else {
             $scope.layer_show(title, url, w, h);
         }
+    };
+
+    $scope.setPerm=function(title,url,w,h){
+        var count=$scope.chooseCount();
+        if(count==0) {
+            alert("请选择记录");
+            return;
+        }
+        if(count>1) {
+            alert("只能选择一条记录");
+            return;
+        }
+        var val="";
+        var groupName="";
+        if(count==1) {
+            val=$scope.getItem("groupId")+"";
+            groupName=$scope.getItem("groupName")+"";
+        }
+        if(!w) {
+            w=$(window).width();
+        }
+        if(!h) {
+            h = $(window).height();
+        }
+        layer_show(title+"-"+groupName, url+"?id="+val+"&type=1", w, h);
     }
 
     $scope.editItem=function(title,url,id,w,h) {

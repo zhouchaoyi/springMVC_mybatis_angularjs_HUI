@@ -21,6 +21,13 @@
     distinct a.module_id, a.module_name, a.module_code, a.is_perm_only, a.parent_id, a.class_id, a.remark, a.icon,
     a.url, a.status, a.user_type, a.b_ext, a.relation_url, case b.module_id when b.module_id then '1' else '0' end as is_parent
   </sql>
+
+  <sql id="Column_List_Perm" >
+    distinct a.module_id moduleId, a.module_name moduleName, a.module_code moduleCode, a.is_perm_only isPermOnly, a.parent_id parentId, a.class_id classId, a.remark, a.icon,
+    a.url, a.status, a.user_type userType, a.b_ext bExt, a.relation_url relationUrl, case b.module_id when b.module_id then '1' else '0' end as isParent,
+    case c.perm_id when c.perm_id then '1' else '0' end as hasPerm
+  </sql>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select
     <include refid="Base_Column_List" />
@@ -43,6 +50,33 @@
     from module_info a
     left join module_info b on a.module_id=b.parent_id
     where (a.module_name like #{searchStr})
+    <if test='status == "1"' >
+      and a.status=1
+    </if>
+    <if test="parentClassId != ''" >
+      and a.class_id like #{parentClassId} and a.class_id &lt;&gt; #{selfClassId}
+    </if>
+  </select>
+
+  <select id="selectForPerm" resultType="hashmap" >
+    select
+    <include refid="Column_List_Perm" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    left join user_perm c on a.module_id=c.module_id and
+    <if test='permType=="0"' >
+        c.user_id=#{permUserId}
+    </if>
+    <if test='permType=="1"' >
+        c.user_group_id=#{permUserId}
+    </if>
+    where (a.module_name like #{searchStr}) and a.status=1
+  </select>
+
+  <select id="selectStatusByClassId" resultType="hashmap" >
+    select module_id
+    from module_info
+    where class_id like #{classId} and status=#{status}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
@@ -210,4 +244,11 @@
       relation_url = #{relationUrl,jdbcType=VARCHAR}
     where module_id = #{moduleId,jdbcType=BIGINT}
   </update>
+
+  <update id="updateStatusByClassId" >
+    update module_info
+    set status = #{status}
+    where class_id like #{classId}
+  </update>
+
 </mapper>

@@ -81,10 +81,32 @@ public class PermController extends BaseController {
         int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
         String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
         String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        String parentClassId = WebJsonUtils.getStringValue(jsonStr, "parentClassId", false);
+        String status = WebJsonUtils.getStringValue(jsonStr, "status", false);
         if(StringUtils.length(orderBy)>0) {
             orderBy=Utils.transOrderByStr(orderBy);
         }
-        JSONObject result = this.permService.listModule(currentPage,pageSize,orderBy,searchStr);
+        JSONObject result = this.permService.listModule(currentPage,pageSize,orderBy,searchStr,status,parentClassId);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/listModuleForPerm", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listModuleForPerm(@RequestBody String jsonStr) throws Exception {
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        String permUserId = WebJsonUtils.getStringValue(jsonStr, "permUserId", true);
+        String permType = WebJsonUtils.getStringValue(jsonStr, "permType", true);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        orderBy="a."+orderBy;
+        JSONObject result = this.permService.listModuleForPerm(currentPage, pageSize, orderBy, searchStr, permUserId, permType);
         JSONObject json = new JSONObject();
         json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));
@@ -145,7 +167,7 @@ public class PermController extends BaseController {
         module.setStatus(Byte.valueOf(status));
         module.setParentId(Long.valueOf(parentId));
 
-        Module result = this.permService.updateModule(module);
+        JSONObject result = this.permService.updateModule(module);
         //System.out.println("success="+success);
         JSONObject json = new JSONObject();
         json.put("data", result);
@@ -286,6 +308,20 @@ public class PermController extends BaseController {
 
         JSONObject json = new JSONObject();
         json.put("data", success);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/addPerm", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addPerm(@RequestBody String jsonStr) throws Exception {
+        String id = WebJsonUtils.getStringValue(jsonStr, "id", true);
+        String type = WebJsonUtils.getStringValue(jsonStr, "type", true);
+        String moduleIds = WebJsonUtils.getStringValue(jsonStr, "moduleIds", false);
+
+        int result = this.permService.addPerm(id,type,moduleIds);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));
         return json.toString();
     }

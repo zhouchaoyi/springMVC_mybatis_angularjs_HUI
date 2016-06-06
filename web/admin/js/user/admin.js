@@ -30,7 +30,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         $scope.param.orderBy=$scope.orderBy;
         $scope.param.searchStr=$scope.searchStr;
         BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
-            console.log(data);
+            //console.log(data);
             if(null==data) {
                 return;
             }
