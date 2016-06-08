@@ -195,9 +195,34 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         $scope.layer_show("用户组",url,w,h);
     };
 
+    $scope.setPerm=function(title,url,w,h){
+        var count=$scope.chooseCount();
+        if(count==0) {
+            alert("请选择记录");
+            return;
+        }
+        if(count>1) {
+            alert("只能选择一条记录");
+            return;
+        }
+        var val="";
+        var name="";
+        if(count==1) {
+            val=$scope.getItem("userId")+"";
+            name=$scope.getItem("loginName")+"";
+        }
+        if(!w) {
+            w=$(window).width();
+        }
+        if(!h) {
+            h = $(window).height();
+        }
+        layer_show(title+"-"+name, url+"?id="+val+"&type=0", w, h);
+    };
+
     $scope.addItem=function(title,url,w,h){
         layer_show(title,url,w,h);
-    }
+    };
 
     $scope.editItem=function(title,url,id,w,h) {
         //alert(id);

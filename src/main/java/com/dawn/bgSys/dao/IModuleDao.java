@@ -21,6 +21,12 @@ public interface IModuleDao {
 
     List<Map> selectForPerm(@Param("searchStr")String searchStr,@Param("permUserId")String permUserId,@Param("permType")String permType);
 
+    List<Map> selectUserAllPerm(@Param("searchStr")String searchStr,@Param("permUserId")String permUserId,@Param("userType")String userType);
+
+    List<Map> selectGroupPermForUser(@Param("userId")String userId);
+
+    List<Map> selectCommonPerm(@Param("userType")String userType);
+
     Module selectByCode(String moduleCode);
 
     List<Map> selectStatusByClassId(@Param("status")String status,@Param("classId")String classId);

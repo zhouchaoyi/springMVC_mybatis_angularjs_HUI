@@ -24,6 +24,14 @@
     from user_type
     where type_id = #{typeId,jdbcType=BIGINT}
   </select>
+
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from user_type
+    where type_code = #{typeCode}
+  </select>
+
   <delete id="deleteByPrimaryKey" >
     delete from user_type
     where type_id in

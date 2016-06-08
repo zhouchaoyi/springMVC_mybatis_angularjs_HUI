@@ -13,6 +13,8 @@ public interface IUserTypeDao {
 
     UserType selectByPrimaryKey(Long typeId);
 
+    UserType selectByCode(String typeCode);
+
     int updateByPrimaryKeySelective(UserType record);
 
     int updateByPrimaryKey(UserType record);

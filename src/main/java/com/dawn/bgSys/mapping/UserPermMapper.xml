@@ -28,6 +28,9 @@
     <if test='type == "1"' >
        user_group_id = #{id}
     </if>
+    <if test='type == "0"' >
+      user_id = #{id}
+    </if>
   </delete>
 
   <insert id="insert" parameterType="com.dawn.bgSys.domain.UserPerm" >

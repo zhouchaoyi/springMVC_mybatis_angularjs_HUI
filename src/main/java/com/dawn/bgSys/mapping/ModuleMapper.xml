@@ -73,6 +73,41 @@
     where (a.module_name like #{searchStr}) and a.status=1
   </select>
 
+  <select id="selectUserAllPerm" resultType="hashmap" >
+    select
+    <include refid="Column_List_Perm" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    left join (
+        select i.module_id as perm_id from user_perm i
+        where i.user_id=#{permUserId}
+        union
+        select i.module_id as perm_id from user_perm i
+        left join user_group_relation j on j.user_group_id=i.user_group_id
+        left join user_group k on k.group_id=j.user_group_id
+        where j.status=1 and j.user_id=#{permUserId} and k.status=1
+        union
+        select i.module_id as perm_id from module_info i
+        where concat(',',i.user_type,',') like #{userType} and i.status=1
+    ) c on a.module_id=c.perm_id
+    where (a.module_name like #{searchStr}) and a.status=1
+
+  </select>
+
+  <select id="selectGroupPermForUser" resultType="hashmap" >
+    select a.module_code as moduleCode
+    from module_info a
+    left join user_perm i on i.module_id=a.module_id
+    left join user_group_relation j on j.user_group_id=i.user_group_id
+    left join user_group k on k.group_id=j.user_group_id
+    where j.status=1 and j.user_id=#{userId} and k.status=1 and a.status=1
+  </select>
+
+  <select id="selectCommonPerm" resultType="hashmap" >
+    select i.module_code as moduleCode from module_info i
+        where concat(',',i.user_type,',') like #{userType} and i.status=1
+  </select>
+
   <select id="selectStatusByClassId" resultType="hashmap" >
     select module_id
     from module_info

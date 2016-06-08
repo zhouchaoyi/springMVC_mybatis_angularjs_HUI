@@ -9,7 +9,8 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     var setting = {
         view: {
             fontCss : {"font-weight":"bold"},
-            selectedMulti: false
+            selectedMulti: false,
+            nameIsHTML: true
         },
         data: {
             simpleData: {
@@ -74,6 +75,15 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
                 obj.status=item.status==1?'启用':'禁用';
                 if(item.hasPerm=="1") {
                     obj.checked=true;
+                    if($scope.query.type=="0") { //如果显示的是用户权限
+                        if(item.permType=="1") { //通用权限
+                            obj.chkDisabled=true;
+                            obj.name=item.moduleName+"<font color='red'>(\""+item.permRemark+"\"通用权限)</font>";
+                        }else if(item.permType=="2") { //组权限
+                            obj.chkDisabled=true;
+                            obj.name=item.moduleName+"<font color='maroon'>(组权限)</font>";
+                        }
+                    }
                 }else {
                     obj.checked=false;
                 }
@@ -102,6 +112,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         param.id=$scope.query.id;
         param.type=$scope.query.type;
         param.moduleIds=moduleIds;
+        //console.log(param.moduleIds);
         BusinessService.post(myRootUrl + url, param).success(function (data) {
             if(null==data) {
                 return;

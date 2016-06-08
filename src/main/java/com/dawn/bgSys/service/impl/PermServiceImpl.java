@@ -2,14 +2,8 @@ package com.dawn.bgSys.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dawn.bgSys.dao.IControlPanelDao;
-import com.dawn.bgSys.dao.IModuleDao;
-import com.dawn.bgSys.dao.IUserPermDao;
-import com.dawn.bgSys.dao.IUserTypeDao;
-import com.dawn.bgSys.domain.ControlPanel;
-import com.dawn.bgSys.domain.Module;
-import com.dawn.bgSys.domain.UserPerm;
-import com.dawn.bgSys.domain.UserType;
+import com.dawn.bgSys.dao.*;
+import com.dawn.bgSys.domain.*;
 import com.dawn.bgSys.exception.OperateFailureException;
 import com.dawn.bgSys.service.IPermService;
 import com.dawn.bgSys.utils.TreeModel;
@@ -42,6 +36,9 @@ public class PermServiceImpl implements IPermService {
 
     @Autowired
     private IUserPermDao userPermDao;
+
+    @Autowired
+    private IUserDao userDao;
 
     @Autowired
     private TreeModel treeModel;
@@ -181,6 +178,12 @@ public class PermServiceImpl implements IPermService {
     public JSONObject listModuleForPerm(int currentPage,int pageSize,String orderByStr,String searchStr,String permUserId,String permType) {
         JSONObject result=new JSONObject();
 
+        String userTypeStr="";
+        if(StringUtils.equals("0",permType)) { //如果是用户获取用户类别
+            User user = userDao.selectByPrimaryKey(permUserId);
+            userTypeStr = user.getUserType();
+        }
+
         if(currentPage>0) {
             PageHelper.startPage(currentPage, pageSize);
         }
@@ -188,7 +191,57 @@ public class PermServiceImpl implements IPermService {
             PageHelper.orderBy(orderByStr);
         }
         searchStr="%"+searchStr+"%";
-        List<Map> list = moduleDao.selectForPerm(searchStr, permUserId, permType);
+        List<Map> list = null;
+
+        if(StringUtils.equals("0",permType)) { //用户
+            //获取模块信息，其中包含此用户是否有权限的标志
+            list = moduleDao.selectUserAllPerm(searchStr, permUserId, "%,"+userTypeStr+",%");
+            //获取用户的用户组权限
+            List<Map> list2 = moduleDao.selectGroupPermForUser(permUserId);
+            String groupPerm ="";
+            if(null!=list2&&list2.size()>0) {
+                String[] aStr = new String[list2.size()];
+                for(int i=0;i<list2.size();i++) {
+                    aStr[i]=list2.get(i).get("moduleCode").toString();
+                }
+                groupPerm = StringUtils.join(aStr,",");
+            }
+            //获取通用权限
+            list2 = moduleDao.selectCommonPerm("%," + userTypeStr+",%");
+            String commonPerm ="";
+            if(null!=list2&&list2.size()>0) {
+                String[] aStr = new String[list2.size()];
+                for(int i=0;i<list2.size();i++) {
+                    aStr[i]=list2.get(i).get("moduleCode").toString();
+                }
+                commonPerm = StringUtils.join(aStr,",");
+            }
+            //System.out.println("groupPerm="+groupPerm);
+            //System.out.println("commonPerm="+commonPerm);
+            UserType userType = userTypeDao.selectByCode(userTypeStr);
+            String userTypeName=userType.getTypeName();
+
+            for(Map map : list) {
+                if(StringUtils.equals("1",map.get("hasPerm").toString())) {
+                    map.put("permType", "0");
+                    map.put("permRemark", "");
+                    if (StringUtils.length(groupPerm) > 0) {
+                        if (("," + groupPerm + ",").indexOf("," + map.get("moduleCode").toString() + ",") != -1) {
+                            map.put("permType", "2"); //设置为组权限
+                            map.put("permRemark", "");
+                        }
+                    }
+                    if (StringUtils.length(commonPerm) > 0) {
+                        if (("," + commonPerm + ",").indexOf("," + map.get("moduleCode").toString() + ",") != -1) {
+                            map.put("permType", "1"); //设置为通用权限
+                            map.put("permRemark", userTypeName);
+                        }
+                    }
+                }
+            }
+        }else if(StringUtils.equals("1",permType)) { //用户组
+            list = moduleDao.selectForPerm(searchStr, permUserId, permType);
+        }
 
         //code转换成中文字
         List<UserType> listUserType = userTypeDao.listUserType();
@@ -349,6 +402,16 @@ public class PermServiceImpl implements IPermService {
                     userPerm.setModuleId(Long.valueOf(moduleId));
                     userPerm.setUserGroupId(Long.valueOf(id));
                     userPerm.setCanInherit(Byte.valueOf("1"));
+                    userPerm.setIsUserGroup(Integer.valueOf(type));
+                    result = userPermDao.insertSelective(userPerm);
+                }
+            }else if(StringUtils.equals("0", type)) { //用户
+                String[] aStr = moduleIds.split(",");
+                for (String moduleId : aStr) {
+                    UserPerm userPerm = new UserPerm();
+                    userPerm.setModuleId(Long.valueOf(moduleId));
+                    userPerm.setUserId(id);
+                    userPerm.setCanInherit(Byte.valueOf("0"));
                     userPerm.setIsUserGroup(Integer.valueOf(type));
                     result = userPermDao.insertSelective(userPerm);
                 }
