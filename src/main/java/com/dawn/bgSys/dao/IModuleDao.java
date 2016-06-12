@@ -27,6 +27,10 @@ public interface IModuleDao {
 
     List<Map> selectCommonPerm(@Param("userType")String userType);
 
+    List<Map> selectAllPerm(@Param("userId")String userId,@Param("userType")String userType);
+
+    List<Map> selectMenu(List<String> moduleCode);
+
     Module selectByCode(String moduleCode);
 
     List<Map> selectStatusByClassId(@Param("status")String status,@Param("classId")String classId);

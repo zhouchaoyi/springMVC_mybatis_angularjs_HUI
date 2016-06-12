@@ -108,10 +108,41 @@
         where concat(',',i.user_type,',') like #{userType} and i.status=1
   </select>
 
+  <select id="selectAllPerm" resultType="hashmap" >
+    select j.module_code as moduleCode from user_perm i
+    left join module_info j on i.module_id=j.module_id
+    where i.user_id=#{userId} and j.status=1
+    union
+    select m.module_code as moduleCode from user_perm i
+    left join module_info m on i.module_id=m.module_id
+    left join user_group_relation j on j.user_group_id=i.user_group_id
+    left join user_group k on k.group_id=j.user_group_id
+    where j.status=1 and j.user_id=#{userId} and k.status=1 and m.status=1
+    union
+    select i.module_code as moduleCode from module_info i
+    where concat(',',i.user_type,',') like #{userType} and i.status=1
+  </select>
+
   <select id="selectStatusByClassId" resultType="hashmap" >
     select module_id
     from module_info
     where class_id like #{classId} and status=#{status}
+  </select>
+
+  <select id="selectMenu" resultType="hashmap" >
+    select distinct i.class_id classId,i.item_name itemName,j.url
+    from control_panel i
+    left join module_info j on i.module_id=j.module_id
+    inner join (select a.class_id
+    from control_panel a
+    left join module_info b on b.module_id=a.module_id
+    where b.module_code in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and a.status=1) m on m.class_id like concat(i.class_id,'%')
+    where i.status=1
+    order by i.class_id
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >

@@ -21,7 +21,7 @@ public interface IUserService {
 
     public JSONObject queryUserByNameAndPass(String loginName,String password);
 
-    public User queryUserById(String id);
+    public User queryUserById(String id,String showName);
 
     public User queryUserByLoginName(String loginName);
 

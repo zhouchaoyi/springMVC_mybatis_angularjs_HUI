@@ -33,7 +33,7 @@ h4{line-height:30px}
 	.Hui-logo-m{display:none;width:45px;margin-left:15px}
 	.Hui-subtitle{ font-size:12px; color:#eee; padding-top:15px}
 	.viewhome{ line-height:44px; padding-right:15px}
-	.viewhome a{ color:#FFF; padding-left:20px; background:url(../images/icon_link.png) no-repeat 0 center}
+	.viewhome a{ color:#FFF; padding-left:20px; background:url("../images/icon_link.png") no-repeat 0 center}
 	
 	/*导航*/
 	#Hui-nav{ margin-left:200px; margin-right:260px; background-color:transparent}
@@ -90,7 +90,7 @@ h4{line-height:30px}
 		Explain:页脚
 		Last Modify:	jackying
 	*/
-	.footer{border-top:1px solid #E8E8E8;margin-top:20px; padding:15px;font-family:tahoma,Arial;font-size:12px;color:#999;line-height:22px;text-align:center}
+	.footer{border-top:1px solid #E8E8E8;margin-top:20px; padding:15px;font-family:tahoma,Arial;font-size:12px;color:#999;line-height:22px;text-align:center;position:fixed; bottom:0; left:0;width:100%;}
 	.footer a,.footer a:hover{color:#999}
 /*横向手机 竖向平板*/
 @media (max-width: 767px) {

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -418,5 +419,55 @@ public class PermServiceImpl implements IPermService {
             }
         }
         return result;
+    }
+
+    public JSONObject listMenu(String userId) {
+        User user = userDao.selectByPrimaryKey(userId);
+        String userType = user.getUserType();
+        List<Map> listPerm = moduleDao.selectAllPerm(userId,"%," + userType+",%");
+        List<String> listModuleCode = new ArrayList<String>();
+        for(Map map : listPerm) {
+            String moduleCode = map.get("moduleCode").toString();
+            //System.out.println("moduleCode="+moduleCode+"<<<<");
+            listModuleCode.add(moduleCode);
+        }
+        List<Map> listMenu = moduleDao.selectMenu(listModuleCode);
+//        for(Map map : listMenu) {
+//            System.out.println("classId="+map.get("classId")+" itemName="+map.get("itemName")+" url="+map.get("url"));
+//        }
+        //将菜单list转换成两层结构，方便前端输出
+        List<Map> list = new ArrayList<Map>();
+        int listIndex=0;
+        List<Map> childList=new ArrayList<Map>();
+        for(int i=0;i<listMenu.size();i++) {
+            Map map = listMenu.get(i);
+            if(StringUtils.length(map.get("classId").toString())==10) {
+                if(i!=0) {
+                    list.get(listIndex++).put("child",childList);
+                    childList=new ArrayList<Map>();
+                }
+                Map itemMap = new HashMap();
+                itemMap.put("itemName",map.get("itemName").toString());
+                itemMap.put("level","1");
+                list.add(itemMap);
+            }else {
+                Map itemMap = new HashMap();
+                itemMap.put("itemName",map.get("itemName").toString());
+                if(StringUtils.length(map.get("classId").toString())==20) {
+                    itemMap.put("level", "2");
+                }else {
+                    itemMap.put("level", "3");
+                    itemMap.put("url", map.get("url").toString());
+                }
+                childList.add(itemMap);
+            }
+        }
+        if(null!=list&&list.size()>0) {
+            list.get(listIndex).put("child", childList);
+        }
+
+        JSONObject json=new JSONObject();
+        json.put("menu",list);
+        return json;
     }
 }

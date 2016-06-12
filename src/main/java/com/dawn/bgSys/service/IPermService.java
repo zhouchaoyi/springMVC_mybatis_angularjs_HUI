@@ -36,4 +36,6 @@ public interface IPermService {
     public int moveControlPanel(String itemId,String move);
 
     public int addPerm(String id,String type,String moduleIds);
+
+    public JSONObject listMenu(String userId);
 }

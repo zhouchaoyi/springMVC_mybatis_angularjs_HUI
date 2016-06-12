@@ -86,8 +86,12 @@ public class UserServiceImpl implements IUserService {
         return json;
     }
 
-    public User queryUserById(String id) {
+    public User queryUserById(String id,String showName) {
         User user=userDao.selectByPrimaryKey(id);
+        if(StringUtils.equals("1",showName)) {
+            UserType userType = userTypeDao.selectByCode(user.getUserType());
+            user.setUserType(userType.getTypeName());
+        }
         return user;
     }
 

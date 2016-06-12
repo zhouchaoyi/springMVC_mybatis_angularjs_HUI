@@ -217,8 +217,9 @@ public class UserController extends BaseController {
     public String queryUserById(@RequestBody String jsonStr) throws Exception {
 
         String id = WebJsonUtils.getStringValue(jsonStr, "id", true);
+        String showName = WebJsonUtils.getStringValue(jsonStr, "showName", false);
 
-        User result = this.userService.queryUserById(id);
+        User result = this.userService.queryUserById(id,showName);
 
         JSONObject json = new JSONObject();
         json.put("data", result);

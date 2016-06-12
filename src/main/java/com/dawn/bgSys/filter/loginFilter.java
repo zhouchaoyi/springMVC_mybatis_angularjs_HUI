@@ -71,7 +71,7 @@ public class loginFilter extends BaseFilter {
                     int modifyFlag=Integer.valueOf(map.get("modifyFlag").toString());
                     String userId=map.get("userId").toString();
                     IUserService userService = (IUserService)context.getBean("userServiceImpl");
-                    User user = userService.queryUserById(userId);
+                    User user = userService.queryUserById(userId,"");
                     if(modifyFlag!=user.getModifyFlag()) {
                         throw new OperateFailureException("登录名密码错误或登录已过期，请重新登录",Consts.TOKEN_ERROR_CODE);
                     }

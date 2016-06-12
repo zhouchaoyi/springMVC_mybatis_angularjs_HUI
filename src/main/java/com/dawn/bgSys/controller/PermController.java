@@ -325,4 +325,19 @@ public class PermController extends BaseController {
         json.put("status", Utils.getSubStatus("获取数据成功！"));
         return json.toString();
     }
+
+    @RequestMapping(value = "/listMenu", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String listMenu(@RequestBody String jsonStr) throws Exception {
+        String token = WebJsonUtils.getStringValue(jsonStr, "token",true);
+
+        Map<String,Object> map= JWTUtils.verifierToken(token, appTK);
+        String currentUserId=map.get("userId").toString();
+
+        JSONObject result = this.permService.listMenu(currentUserId);
+        JSONObject json = new JSONObject();
+        json.put("data", result);
+        json.put("status", Utils.getSubStatus("获取数据成功！"));
+        return json.toString();
+    }
 }
