@@ -40,16 +40,16 @@ public class TestMyBatis {
 
     @Test
     public void test2() {
-        Department dept =new Department();
-        dept.setDepartmentName("测试111");
-        dept.setParentId(Long.valueOf(-1));
-        dept.setDepartmentKey("Test");
-        dept.setRemark("");
-        dept.setIsTypeOnly(Byte.valueOf("1"));
-        try {
-            userService.addDepartment(dept);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        Department dept =new Department();
+//        dept.setDepartmentName("测试111");
+//        dept.setParentId(Long.valueOf(-1));
+//        dept.setDepartmentKey("Test");
+//        dept.setRemark("");
+//        dept.setIsTypeOnly(Byte.valueOf("1"));
+//        try {
+//            userService.addDepartment(dept);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

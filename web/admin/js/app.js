@@ -3,7 +3,7 @@
  */
 
 //虚拟路径
-var myRootUrl="/stock";
+var myRootUrl="/bgSys";
 //登录页地址
 var loginUrl=myRootUrl+"/admin/login.html";
 
