@@ -137,7 +137,7 @@ public class PermServiceImpl implements IPermService {
         return result;
     }
 
-    public JSONObject listModule(int currentPage,int pageSize,String orderByStr,String searchStr,String status,String parentClassId) {
+    public JSONObject listModule(int currentPage,int pageSize,String orderByStr,String searchStr,String status,String parentClassId,String relationUrl) {
         JSONObject result=new JSONObject();
 
         if(currentPage>0) {
@@ -147,22 +147,27 @@ public class PermServiceImpl implements IPermService {
             PageHelper.orderBy(orderByStr);
         }
         searchStr="%"+searchStr+"%";
-        List<Module> list = moduleDao.select(searchStr,status,parentClassId+"%",parentClassId);
+        List<Module> list = null;
+        if(StringUtils.length(relationUrl)==0) {
+            list = moduleDao.select(searchStr, status, parentClassId + "%", parentClassId);
 
-        //code转换成中文字
-        List<UserType> listUserType = userTypeDao.listUserType();
-        Map<String,String> map = new HashMap<String,String>();
-        for(UserType userType : listUserType) {
-            map.put(userType.getTypeCode(),userType.getTypeName());
-        }
-        for(Module module : list) {
-            if(module.getUserType().length()>0) {
-                String[] aStr = module.getUserType().split(",");
-                for(int i=0;i<aStr.length;i++) {
-                    aStr[i]=map.get(aStr[i].trim());
-                }
-                module.setUserType(StringUtils.join(aStr,","));
+            //code转换成中文字
+            List<UserType> listUserType = userTypeDao.listUserType();
+            Map<String, String> map = new HashMap<String, String>();
+            for (UserType userType : listUserType) {
+                map.put(userType.getTypeCode(), userType.getTypeName());
             }
+            for (Module module : list) {
+                if (module.getUserType().length() > 0) {
+                    String[] aStr = module.getUserType().split(",");
+                    for (int i = 0; i < aStr.length; i++) {
+                        aStr[i] = map.get(aStr[i].trim());
+                    }
+                    module.setUserType(StringUtils.join(aStr, ","));
+                }
+            }
+        }else {
+            list = moduleDao.selectByRelationUrl("%"+relationUrl+"%");
         }
         //System.out.println(list.size());
         PageInfo page = new PageInfo(list);
@@ -469,5 +474,17 @@ public class PermServiceImpl implements IPermService {
         JSONObject json=new JSONObject();
         json.put("menu",list);
         return json;
+    }
+
+    public boolean hasPerm(String userId,String moduleCode) {
+        User user = userDao.selectByPrimaryKey(userId);
+        String userType = user.getUserType();
+        List<Map> listPerm = moduleDao.selectAllPerm(userId,"%," + userType+",%");
+        for(Map map : listPerm) {
+            if(StringUtils.equals(moduleCode,map.get("moduleCode").toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

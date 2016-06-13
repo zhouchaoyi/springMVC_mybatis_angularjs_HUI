@@ -1,6 +1,7 @@
 package com.dawn.bgSys.common;
 
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.password.Base64Utils;
@@ -154,6 +155,9 @@ public class WebJsonUtils {
 
     public static String getStringValue(String jsonStr, String paramName,boolean notNull)
             throws ParamCheckException {
+        if(null==jsonStr|| StringUtils.equals("",jsonStr)) {
+            throw new ParamCheckException("请传入JSON格式参数");
+        }
         JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(jsonStr);

@@ -59,9 +59,9 @@ public class Consts {
     public static final String SR_SESSIONTIMEOUT_FLAG = "SR_SESSIONTIMEOUT_FLAG";
 
     /**
-     * sr超时时间
+     *  权限错误码
      */
-    public static final String SR_SESSIONTIMEOUT = "SR_SESSIONTIMEOUT";
+    public static final String PERM_ERROR_CODE = "000003";
 
     /**
      *  token异常错误码

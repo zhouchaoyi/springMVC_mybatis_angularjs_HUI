@@ -86,7 +86,7 @@ public class PermController extends BaseController {
         if(StringUtils.length(orderBy)>0) {
             orderBy=Utils.transOrderByStr(orderBy);
         }
-        JSONObject result = this.permService.listModule(currentPage,pageSize,orderBy,searchStr,status,parentClassId);
+        JSONObject result = this.permService.listModule(currentPage,pageSize,orderBy,searchStr,status,parentClassId,"");
         JSONObject json = new JSONObject();
         json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));

@@ -19,6 +19,8 @@ public interface IModuleDao {
 
     List<Module> select(@Param("searchStr")String searchStr,@Param("status")String status,@Param("parentClassId")String parentClassId,@Param("selfClassId")String selfClassId);
 
+    List<Module> selectByRelationUrl(@Param("relationUrl")String relationUrl);
+
     List<Map> selectForPerm(@Param("searchStr")String searchStr,@Param("permUserId")String permUserId,@Param("permType")String permType);
 
     List<Map> selectUserAllPerm(@Param("searchStr")String searchStr,@Param("permUserId")String permUserId,@Param("userType")String userType);

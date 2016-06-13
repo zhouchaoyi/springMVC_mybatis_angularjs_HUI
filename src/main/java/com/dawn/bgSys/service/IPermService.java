@@ -13,7 +13,7 @@ public interface IPermService {
 
     public JSONObject updateModule(Module module);
 
-    public JSONObject listModule(int currentPage,int pageSize,String orderBy,String searchStr,String status,String parentClassId);
+    public JSONObject listModule(int currentPage,int pageSize,String orderBy,String searchStr,String status,String parentClassId,String relationUrl);
 
     public JSONObject listModuleForPerm(int currentPage,int pageSize,String orderBy,String searchStr,String permUserId,String permType);
 
@@ -38,4 +38,6 @@ public interface IPermService {
     public int addPerm(String id,String type,String moduleIds);
 
     public JSONObject listMenu(String userId);
+
+    public boolean hasPerm(String userId,String moduleCode);
 }

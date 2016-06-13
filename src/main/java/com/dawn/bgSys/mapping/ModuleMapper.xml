@@ -44,6 +44,14 @@
     where a.module_code = #{moduleCode}
   </select>
 
+  <select id="selectByRelationUrl" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from module_info a
+    left join module_info b on a.module_id=b.parent_id
+    where a.relation_url like #{relationUrl} and a.status=1
+  </select>
+
   <select id="select" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />

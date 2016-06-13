@@ -40,7 +40,7 @@
 		</div>
 	</div>
 </div>
-<div id="moduleDetail" class="pd-20" style="width:20%;float:left;margin-top:50px">
+<div id="moduleDetail" class="pd-20" style="width:25%;float:left;margin-top:50px">
 </div>
 
 <script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
@@ -71,7 +71,7 @@
 						'<div>代码：'+treeNode.moduleCode+'</div><br>' +
 						'<div>通用权限：'+treeNode.userType+'</div><br>' +
 						'<div>路径：'+treeNode.moduleUrl+'</div><br>' +
-						'<div>关联URL：'+treeNode.relationUrl+'</div><br>' +
+						'<div>关联接口：<br>'+treeNode.relationUrl.replace(/\n/g, "<br>")+'</div><br>' +
 						'<div>说明：'+treeNode.remark+'</div><br>' +
 						'<div>类别：'+treeNode.bExt+'</div><br>' +
 						'<div>状态：'+treeNode.status+'</div><br>';

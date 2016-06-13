@@ -34,9 +34,9 @@
     <!--</mvc:interceptors>-->
 
     <!-- 静态资源的访问 -->
-    <mvc:default-servlet-handler/>
+    <!--<mvc:default-servlet-handler/>-->
 
     <!-- 对转向页面的路径解析。prefix：前缀， suffix：后缀 -->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/admin/" p:suffix=".html" />
+    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/admin/" p:suffix=".html" />-->
 
 </beans>

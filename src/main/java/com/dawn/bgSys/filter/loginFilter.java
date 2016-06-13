@@ -1,11 +1,14 @@
 package com.dawn.bgSys.filter;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.*;
 import com.dawn.bgSys.common.consts.Consts;
+import com.dawn.bgSys.domain.Module;
 import com.dawn.bgSys.domain.User;
 import com.dawn.bgSys.exception.GenericException;
 import com.dawn.bgSys.exception.OperateFailureException;
+import com.dawn.bgSys.service.IPermService;
 import com.dawn.bgSys.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,15 +21,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Date: 13-9-26
  * Time: 下午1:38
  */
-public class loginFilter extends BaseFilter {
+public class LoginFilter extends BaseFilter {
 
-    private Logger logger= Logger.getLogger(loginFilter.class);
+    private Logger logger= Logger.getLogger(LoginFilter.class);
     private static final String[] IGNORE_URI = {"/login.do"};
 
     private String appTK;
@@ -44,7 +48,7 @@ public class loginFilter extends BaseFilter {
         ApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
         BodyReaderHttpServletRequestWrapper requestWrapper=null;
         if (!flag) {
-            System.out.println("被拦截<<<<<<");
+            System.out.println("do被拦截<<<<<<");
             try {
                 requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
                 String jsonStr = HttpHelper.getBodyString(requestWrapper);
@@ -74,6 +78,26 @@ public class loginFilter extends BaseFilter {
                     User user = userService.queryUserById(userId,"");
                     if(modifyFlag!=user.getModifyFlag()) {
                         throw new OperateFailureException("登录名密码错误或登录已过期，请重新登录",Consts.TOKEN_ERROR_CODE);
+                    }
+
+                    //验证接口权限
+                    String interfaceUrl=request.getServletPath();
+                    IPermService permService = (IPermService)context.getBean("permServiceImpl");
+                    JSONObject listModule = permService.listModule(-1,-1,"","","","",interfaceUrl);
+                    JSONArray aModule = listModule.getJSONArray("items");
+                    if(null!=aModule && aModule.size()>0) {
+                        boolean userHasPerm=false;
+                        for(int i=0;i<aModule.size();i++) {
+                            JSONObject module = aModule.getJSONObject(i);
+                            //System.out.println("module= "+module.getString("moduleCode")+" <<<<");
+                            if(permService.hasPerm(userId,module.getString("moduleCode"))) {
+                                userHasPerm=true;
+                                break;
+                            }
+                        }
+                        if(!userHasPerm) {
+                            throw new OperateFailureException("用户没有权限",Consts.PERM_ERROR_CODE);
+                        }
                     }
                 }
             } catch (Exception ex) {
