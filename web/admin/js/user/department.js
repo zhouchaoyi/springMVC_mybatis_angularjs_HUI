@@ -4,96 +4,29 @@
 
 app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($scope, $rootScope, BusinessService) {
 
-    //表格相关属性和方法
-    $scope.items={};
-    $scope.checkAllVal=false;
-    $scope.checkAll=function() {
-        for(var i=0;i<$scope.items.length;i++) {
-            $scope.items[i].checked=$scope.checkAllVal;
-        }
-    };
-    $scope.checkItem=function(checked) {
-        if(!checked) {
-            $scope.checkAllVal=false;
-        }
-    };
-    $scope.currentPage=1;
-    $scope.pageSize=10;
-    $scope.pages=1;
-    $scope.gridPrompt=true;
-    $scope.gridPromptTxt="数据加载中......";
-    $scope.listItems=function() {
-        $scope.gridPrompt=true;
-        $scope.gridPromptTxt="数据加载中......";
-        $scope.param.currentPage=$scope.currentPage;
-        $scope.param.pageSize=$scope.pageSize;
-        $scope.param.orderBy=$scope.orderBy;
-        $scope.param.searchStr=$scope.searchStr;
-        BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
-            //console.log(data);
-            if(null==data) {
-                return;
-            }
-            if(data.data.total>0) {
-                $scope.gridPrompt = false;
-            }else {
-                $scope.gridPrompt = true;
-                $scope.gridPromptTxt="没有符合条件的记录";
-            }
-            $scope.items = data.data.items;
-            for (var i = 0; i < $scope.items.length; i++) {
-                $scope.items[i].checked = false;
-            }
-            if($scope.changeGridData) {
-                $scope.changeGridData();
-            }
-            $scope.pages = data.data.pages;
-            if ($scope.pages > 1) {
-                laypage({
-                    cont: 'pagingDiv',
-                    pages: $scope.pages, //可以叫服务端把总页数放在某一个隐藏域，再获取。假设我们获取到的是18
-                    curr: function () { //通过url获取当前页，也可以同上（pages）方式获取
-                        return $scope.currentPage;
-                    }(),
-                    jump: function (e, first) { //触发分页后的回调
-                        if (!first) { //一定要加此判断，否则初始时会无限刷新
-                            $scope.currentPage = e.curr;
-                            $scope.listItems();
-                        }
-                    }
-                });
-            } else {
-                $("#pagingDiv").html("");
-            }
-
+    //表格自定义的属性和方法
+    $scope.dg={};
+    $scope.dg.param={};
+    $scope.dg.param.pageSize=15;
+    $scope.dg.param.orderBy="classId,1";
+    $scope.dg.listUrl="/userMgmt/listDepartment.do";
+    $scope.dg.loadGridData = function() {
+        BusinessService.post(myRootUrl+$scope.dg.listUrl ,$scope.dg.param).success(function (data) {
+            $scope.dg.setGridData(data);
         });
     };
-    $scope.searchKeyup = function(e){
-        var keycode = window.event?e.keyCode:e.which;
-        if(keycode==13){
-            $scope.listItems();
-        }
-    };
-
-    //=====================表格相关属性和方法 结束
-
-
-    //自已定义的属性和方法
-    //列表页属性
-    $scope.param={};
-    $scope.orderBy="classId,1";
-    $scope.mainKey="departmentId"; //删除方法需要用到,表示根据哪个字段来删除
-    $scope.listUrl="/userMgmt/listDepartment.do";
-    $scope.deleteUrl="/userMgmt/deleteDepartment.do";
-    $scope.changeGridData=function() {
-        for (var i = 0; i < $scope.items.length; i++) {
-            for(var j=1;j<$scope.items[i].classId.length/10;j++){
-                $scope.items[i].departmentName="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+$scope.items[i].departmentName;
+    $scope.dg.changeGridData=function() {
+        angular.forEach($scope.dg.items, function(data){
+            for(var j=1;j<data.classId.length/10;j++){
+                data.departmentName="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+data.departmentName;
             }
-        }
-
+        });
     };
+    //表格自定义的属性和方法=================结束
 
+
+    $scope.dg.mainKey="departmentId"; //删除方法需要用到,表示根据哪个字段来删除
+    $scope.deleteUrl="/userMgmt/deleteDepartment.do";
     //表单页属性
     $scope.insertUrl="/userMgmt/addDepartment.do";
     $scope.updateUrl="/userMgmt/updateDepartment.do";
@@ -126,7 +59,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         param.currentPage=-1;
         param.pageSize=-1;
         param.orderBy="classId,1";
-        BusinessService.post(myRootUrl + $scope.listUrl, param).success(function (data) {
+        BusinessService.post(myRootUrl + $scope.dg.listUrl, param).success(function (data) {
             if(null==data) {
                 return;
             }
@@ -230,7 +163,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
         }
     }
 
-    $scope.editItem=function(title,url,id,w,h) {
+    $scope.dg.editItem=function(title,url,id,w,h) {
         if(!w) {
             w=$(window).width();
         }
@@ -241,17 +174,17 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     };
 
 
-    $scope.deleteItem=function(id) {
+    $scope.dg.deleteItem=function(id) {
         var ids = "";
         if (null != id && id != undefined) {
             ids = id;
         } else {
-            for(var i=0;i<$scope.items.length;i++) {
-                if($scope.items[i].checked==true) {
+            for(var i=0;i<$scope.dg.items.length;i++) {
+                if($scope.dg.items[i].checked==true) {
                     if(ids=="") {
-                        ids=ids+$scope.items[i][$scope.mainKey];
+                        ids=ids+$scope.dg.items[i][$scope.dg.mainKey];
                     }else {
-                        ids = ids + "," +$scope.items[i][$scope.mainKey];
+                        ids = ids + "," +$scope.dg.items[i][$scope.dg.mainKey];
                     }
                 }
             }
@@ -266,7 +199,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             BusinessService.post(myRootUrl + $scope.deleteUrl, param).success(function (data) {
                 if (data.data > 0) {
                     alert("删除成功");
-                    $scope.listItems();
+                    $scope.dg.listItems();
                 }
             });
         }
@@ -291,14 +224,14 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             if(null==data) {
                 return;
             }
-            $scope.listItems();
+            $scope.dg.listItems();
         });
     };
 
     $scope.chooseCount=function() {
         var count=0;
-        for(var i=0;i<$scope.items.length;i++) {
-            if($scope.items[i].checked==true) {
+        for(var i=0;i<$scope.dg.items.length;i++) {
+            if($scope.dg.items[i].checked==true) {
                 count++;
             }
         }
@@ -306,9 +239,9 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     };
 
     $scope.getItem=function(key) {
-        for(var i=0;i<$scope.items.length;i++) {
-            if($scope.items[i].checked==true) {
-                return $scope.items[i][key];
+        for(var i=0;i<$scope.dg.items.length;i++) {
+            if($scope.dg.items[i].checked==true) {
+                return $scope.dg.items[i][key];
             }
         }
     };

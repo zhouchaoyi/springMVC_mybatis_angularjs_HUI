@@ -80,75 +80,78 @@ app.directive("myGrid",function($compile){
        restrict : 'E',
        templateUrl: '../ngTemplate/grid.html',
        replace : true,
-       scope: false,
+       scope: {
+           gid: '='
+       },
        transclude:true,
        controller :function($scope, $element, $attrs, $transclude){
            //console.log("come in controller<<<<<<");
-           $scope.columns=[];
+           $scope.gid.columns=[];
            this.addColumn = function(columnObj) {
-               $scope.columns.push(columnObj);
+               $scope.gid.columns.push(columnObj);
                //console.log($scope.columns);
            };
        },
        link: function($scope, iElement, iAttrs, controller) {
            //console.log("come in link<<<<<<");
-           //console.log($scope);
+           //console.log($scope.gid);
            //表格相关属性和方法
-           $scope.items={};
-           $scope.checkAllVal=false;
-           $scope.checkAll=function() {
-               for(var i=0;i<$scope.items.length;i++) {
-                   $scope.items[i].checked=$scope.checkAllVal;
+           $scope.gid.items={};
+           $scope.gid.checkAllVal=false;
+           $scope.gid.checkAll=function() {
+               for(var i=0;i<$scope.gid.items.length;i++) {
+                   $scope.gid.items[i].checked=$scope.gid.checkAllVal;
                }
            };
-           $scope.checkItem=function(checked) {
+           $scope.gid.checkItem=function(checked) {
                if(!checked) {
-                   $scope.checkAllVal=false;
+                   $scope.gid.checkAllVal=false;
                }
            };
-           $scope.pages=1;
-           $scope.gridPrompt=true;
-           $scope.gridPromptTxt="数据加载中......";
-           $scope.listItems=function() {
-               $scope.gridPrompt=true;
-               $scope.gridPromptTxt="数据加载中......";
-               $scope.param.currentPage=$scope.param.currentPage?$scope.param.currentPage:1;
-               $scope.param.pageSize=$scope.param.pageSize?$scope.param.pageSize:10;
-               $scope.param.orderBy=$scope.param.orderBy?$scope.param.orderBy:"";
-               $scope.param.searchStr=$scope.searchStr;
+           $scope.gid.pages=1;
+           $scope.gid.gridPrompt=true;
+           $scope.gid.gridPromptTxt="数据加载中......";
+           $scope.gid.listItems=function() {
+               $scope.gid.gridPrompt=true;
+               $scope.gid.gridPromptTxt="数据加载中......";
+               $scope.gid.param.currentPage=$scope.gid.param.currentPage?$scope.gid.param.currentPage:1;
+               $scope.gid.param.pageSize=$scope.gid.param.pageSize?$scope.gid.param.pageSize:10;
+               $scope.gid.param.orderBy=$scope.gid.param.orderBy?$scope.gid.param.orderBy:"";
+               $scope.gid.param.searchStr=$scope.gid.searchStr?$scope.gid.searchStr:"";
 
-               $scope.loadGridData();
+               $scope.gid.loadGridData();
            };
-           $scope.setGridData = function(data) {
+           $scope.gid.setGridData = function(data) {
                //console.log(data);
                if(null==data) {
                    return;
                }
                if(data.data.total>0) {
-                   $scope.gridPrompt = false;
+                   $scope.gid.gridPrompt = false;
                }else {
-                   $scope.gridPrompt = true;
-                   $scope.gridPromptTxt="没有符合条件的记录";
+                   $scope.gid.gridPrompt = true;
+                   $scope.gid.gridPromptTxt="没有符合条件的记录";
                }
-               $scope.items = data.data.items;
-               for (var i = 0; i < $scope.items.length; i++) {
-                   $scope.items[i].checked = false;
+               $scope.gid.items = data.data.items;
+               for (var i = 0; i < $scope.gid.items.length; i++) {
+                   $scope.gid.items[i].checked = false;
                }
-               if($scope.changeGridData) {
-                   $scope.changeGridData();
+               if($scope.gid.changeGridData) {
+                   $scope.gid.changeGridData();
                }
-               $scope.pages = data.data.pages;
-               if ($scope.pages > 1) {
+               $scope.gid.pages = data.data.pages;
+               if ($scope.gid.pages > 1) {
                    laypage({
                        cont: 'pagingDiv',
-                       pages: $scope.pages, //可以叫服务端把总页数放在某一个隐藏域，再获取。假设我们获取到的是18
+                       pages: $scope.gid.pages, //可以叫服务端把总页数放在某一个隐藏域，再获取。假设我们获取到的是18
                        curr: function () { //通过url获取当前页，也可以同上（pages）方式获取
-                           return $scope.param.currentPage;
+                           return $scope.gid.param.currentPage;
                        }(),
                        jump: function (e, first) { //触发分页后的回调
                            if (!first) { //一定要加此判断，否则初始时会无限刷新
-                               $scope.param.currentPage = e.curr;
-                               $scope.listItems();
+                               $scope.gid.param.currentPage = e.curr;
+                               $scope.gid.checkAllVal=false;
+                               $scope.gid.listItems();
                            }
                        }
                    });
@@ -163,15 +166,15 @@ app.directive("myGrid",function($compile){
                //iElement.append(newElem);
 
            };
-           $scope.searchKeyup = function(e){
+           $scope.gid.searchKeyup = function(e){
                var keycode = window.event?e.keyCode:e.which;
                if(keycode==13){
-                   $scope.listItems();
+                   $scope.gid.listItems();
                }
            };
 
            //执行获取表格数据的函数
-           $scope.listItems();
+           $scope.gid.listItems();
            //=====================表格相关属性和方法 结束
        }
    }
@@ -186,6 +189,7 @@ app.directive("myGridColumn",function() {
             headtext: '@headtext',
             datafield: '@datafield',
             width: '@width',
+            align: '@align',
             itemrender: '@itemrender'
         },
         link: function ($scope, iElement, iAttrs, controller) {
@@ -199,6 +203,11 @@ app.directive("myGridColumn",function() {
             //    columnObj.datafield = "item." + $scope.datafield;
             //}
             columnObj.width=$scope.width;
+            if($scope.align) {
+                columnObj.align=$scope.align;
+            }else {
+                columnObj.align="center"; //默认居中
+            }
             columnObj.itemrender=$scope.itemrender;
             controller.addColumn(columnObj);
         }

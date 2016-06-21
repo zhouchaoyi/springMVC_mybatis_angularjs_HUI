@@ -4,28 +4,25 @@
 
 app.controller('myCtrl', ['$scope', '$rootScope','$compile', 'BusinessService', function ($scope, $rootScope,$compile, BusinessService) {
 
-    //表格的通用方法
-    $scope.loadGridData = function() {
-        BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
-           $scope.setGridData(data);
+    //表格自定义的属性和方法
+    $scope.dg={};
+    $scope.dg.param={};
+    $scope.dg.param.pageSize=10;
+    $scope.dg.param.orderBy="";
+    $scope.dg.listUrl="/userMgmt/listUserType.do";
+    $scope.dg.loadGridData = function() {
+        BusinessService.post(myRootUrl+$scope.dg.listUrl ,$scope.dg.param).success(function (data) {
+            $scope.dg.setGridData(data);
         });
     };
-    //表格的通用方法=================结束
-
-    //表格自定义的属性和方法
-    $scope.param={};
-    $scope.param.pageSize=10;
-    $scope.param.orderBy="";
-    $scope.listUrl="/userMgmt/listUserType.do";
-    $scope.changeGridData=function() {
-        for (var i = 0; i < $scope.items.length; i++) {
-            if($scope.items[i].status==1) {
-                $scope.items[i].status="<font color=green>启用</font>";
-            }else if($scope.items[i].status==0) {
-                $scope.items[i].status="<font color=red>禁用</font>";
+    $scope.dg.changeGridData=function() {
+        angular.forEach($scope.dg.items, function(data){
+            if(data.status==1) {
+                data.status="<font color=green>启用</font>";
+            }else if(data.status==0) {
+                data.status="<font color=red>禁用</font>";
             }
-        }
-
+        });
     };
     //表格自定义的属性和方法=================结束
 
@@ -83,24 +80,24 @@ app.controller('myCtrl', ['$scope', '$rootScope','$compile', 'BusinessService', 
         }
     };
 
-    $scope.roleEdit=function(title,url,id,w,h) {
+    $scope.dg.roleEdit=function(title,url,id,w,h) {
         //alert(id);
         layer_show(title,url+"?type_id="+id,w,h);
     };
 
 
-    $scope.delUserType=function(id) {
+    $scope.dg.delUserType=function(id) {
         if(confirm("角色删除须谨慎，确认要删除吗？")) {
             var ids = "";
             if (null != id && id != undefined) {
                 ids = id;
             } else {
-                for(var i=0;i<$scope.items.length;i++) {
-                    if($scope.items[i].checked==true) {
+                for(var i=0;i<$scope.dg.items.length;i++) {
+                    if($scope.dg.items[i].checked==true) {
                         if(ids=="") {
-                            ids=ids+$scope.items[i].typeId;
+                            ids=ids+$scope.dg.items[i].typeId;
                         }else {
-                            ids = ids + "," +$scope.items[i].typeId;
+                            ids = ids + "," +$scope.dg.items[i].typeId;
                         }
                     }
                 }
@@ -114,7 +111,7 @@ app.controller('myCtrl', ['$scope', '$rootScope','$compile', 'BusinessService', 
             BusinessService.post(myRootUrl + "/userMgmt/deleteUserType.do", param).success(function (data) {
                 if (data.data > 0) {
                     alert("删除成功");
-                    $scope.listItems();
+                    $scope.dg.listItems();
                 }
             });
         }

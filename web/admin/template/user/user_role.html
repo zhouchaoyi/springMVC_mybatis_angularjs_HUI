@@ -29,22 +29,22 @@
 			<a class="btn btn-primary radius" href="javascript:;" onclick="admin_role_add('添加角色','user_role_prop.html','800')">
 				<i class="Hui-iconfont">&#xe600;</i> 添加角色
 			</a>&nbsp;
-			<a href="javascript:;" ng-click="delUserType()" class="btn btn-danger radius">
+			<a href="javascript:;" ng-click="dg.delUserType()" class="btn btn-danger radius">
 				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除
 			</a>
 		</span>
 	</div>
-	<my-grid>
+	<my-grid gid="dg">
 		<my-grid-column headtext="角色名" itemrender="roleTypeName.html" width="200">
 			<script type="text/ng-template" id="roleTypeName.html">
-				<a href="javascript:;" ng-click="roleEdit('角色编辑','user_role_prop.html',item.typeId)">{{item.typeName}}</a>
+				<a href="javascript:;" ng-click="gid.roleEdit('角色编辑','user_role_prop.html',item.typeId)">{{item.typeName}}</a>
 			</script>
 		</my-grid-column>
 		<my-grid-column headtext="描述" datafield="remark" width="250"></my-grid-column>
 		<my-grid-column headtext="状态" datafield="status" width="50"></my-grid-column>
 		<my-grid-column headtext="操作" itemrender="roleListOper.html" width="70">
 			<script type="text/ng-template" id="roleListOper.html">
-				<a title="编辑" href="javascript:;" ng-click="roleEdit('角色编辑','user_role_prop.html',item.typeId)" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" ng-click="delUserType(item.typeId)" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+				<a title="编辑" href="javascript:;" ng-click="gid.roleEdit('角色编辑','user_role_prop.html',item.typeId)" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" ng-click="gid.delUserType(item.typeId)" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
 			</script>
 		</my-grid-column>
 	</my-grid>

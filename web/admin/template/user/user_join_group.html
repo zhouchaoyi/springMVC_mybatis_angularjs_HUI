@@ -29,28 +29,11 @@
 	<div class="text-c">
 		<br>
 	</div>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
-			<tr>
-				<th scope="col" colspan="9">[{{query.loginName}}]&nbsp;选中用户组列表</th>
-			</tr>
-			<tr class="text-c">
-				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-				<th width="200">用户组</th>
-				<th width="200">备注</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="text-c" ng-repeat="item in items">
-				<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-				<td ng-bind="item.groupName"></td>
-				<td ng-bind="item.remark"></td>
-			</tr>
-			<tr class="text-c" ng-if="gridPrompt"><td colspan="30" ng-bind="gridPromptTxt"></td></tr>
-		</tbody>
-	</table>
-	<br>
-	<div id="pagingDiv"></div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">[{{query.loginName}}]&nbsp;选中用户组列表</div>
+	<my-grid gid="dg">
+		<my-grid-column headtext="用户组" datafield="groupName" width="200"></my-grid-column>
+		<my-grid-column headtext="备注" datafield="remark" width="200"></my-grid-column>
+	</my-grid>
 </div>
 <div class="pd-20" style="text-align: center;width:8%;float:left">
 	<br><br><br>
@@ -65,33 +48,16 @@
 <!--表格 (2) -->
 <div class="pd-20" style="width:35%;float:left">
 	<div class="text-c">
-		<input type="text" class="input-text" ng-model="searchStr2" ng-keyup="searchKeyup2($event)" style="width:250px" placeholder="输入关键字" >
+		<input type="text" class="input-text" ng-model="dg2.searchStr" ng-keyup="dg2.searchKeyup($event)" style="width:250px" placeholder="输入关键字" >
 		<button class="btn btn-success" ng-click="listItems2()" >
 			<i class="Hui-iconfont">&#xe665;</i> 搜索
 		</button>
 	</div>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
-		<tr>
-			<th scope="col" colspan="9">用户组列表</th>
-		</tr>
-		<tr class="text-c">
-			<th width="25"><input type="checkbox" ng-model="checkAllVal2" ng-click="checkAll2()"></th>
-			<th width="200">用户组</th>
-			<th width="200">备注</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr class="text-c" ng-repeat="item in items2">
-			<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem2(item.checked)"></td>
-			<td ng-bind="item.groupName"></td>
-			<td ng-bind="item.remark"></td>
-		</tr>
-		<tr class="text-c" ng-if="gridPrompt2"><td colspan="30" ng-bind="gridPromptTxt2"></td></tr>
-		</tbody>
-	</table>
-	<br>
-	<div id="pagingDiv2"></div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">用户组列表</div>
+	<my-grid gid="dg2">
+		<my-grid-column headtext="用户组" datafield="groupName" width="200"></my-grid-column>
+		<my-grid-column headtext="备注" datafield="remark" width="200"></my-grid-column>
+	</my-grid>
 </div>
 <script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>

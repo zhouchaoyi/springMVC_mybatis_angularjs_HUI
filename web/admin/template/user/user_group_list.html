@@ -27,7 +27,7 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 基础平台 <span class="c-gray en">&gt;</span> 用户组 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="pd-20">
 	<div class="text-c">
-		<input type="text" class="input-text" ng-model="searchStr" ng-keyup="searchKeyup($event)" style="width:250px" placeholder="输入关键字" id="" name="">
+		<input type="text" class="input-text" ng-model="dg.searchStr" ng-keyup="dg.searchKeyup($event)" style="width:250px" placeholder="输入关键字" id="" name="">
 		<button class="btn btn-success" ng-click="listItems()" id="" name="">
 			<i class="Hui-iconfont">&#xe665;</i> 搜索
 		</button>
@@ -44,48 +44,34 @@
 			<a href="javascript:;" ng-click="setPerm('设置权限','../perm/perm.html')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe63c;</i> 设置权限
 			</a>&nbsp;
-			<a href="javascript:;" ng-click="deleteItem()" class="btn btn-danger radius">
+			<a href="javascript:;" ng-click="dg.deleteItem()" class="btn btn-danger radius">
 				<i class="Hui-iconfont">&#xe6e2;</i> 删除
 			</a>
 		</span>
 	</div>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
-			<tr>
-				<th scope="col" colspan="9">用户组列表</th>
-			</tr>
-			<tr class="text-c">
-				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-				<th width="200">组名称</th>
-				<th width="200">成员人数</th>
-				<th width="200">组权限</th>
-				<th width="200">说明</th>
-				<th width="70">状态</th>
-				<th width="70">操作</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="text-c" ng-repeat="item in items">
-				<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-				<td><a ng-bind="item.groupName" ng-click="editItem('用户组编辑','user_group_prop.html',item.groupId)"></a></td>
-				<td ng-bind="item.memberCount"></td>
-				<td ng-bind=""></td>
-				<td ng-bind="item.remark"></td>
-				<td ng-bind="item.status==1?'启用':'禁用'" ng-class="{'1':'font_green', '0': 'font_red'}[item.status]"></td>
-				<td class="f-14">
-					<a title="编辑" href="javascript:;" ng-click="editItem('用户组编辑','user_group_prop.html',item.groupId)" style="text-decoration:none">
-						<i class="Hui-iconfont">&#xe6df;</i>
-					</a>
-					<a title="删除" href="javascript:;" ng-click="deleteItem(item.groupId)" class="ml-5" style="text-decoration:none">
-						<i class="Hui-iconfont">&#xe6e2;</i>
-					</a>
-				</td>
-			</tr>
-			<tr class="text-c" ng-if="gridPrompt"><td colspan="30" ng-bind="gridPromptTxt"></td></tr>
-		</tbody>
-	</table>
-	<br>
-	<div id="pagingDiv"></div>
+
+	<my-grid gid="dg">
+		<my-grid-column headtext="组名称" itemrender="name.html" width="200">
+			<script type="text/ng-template" id="name.html">
+				<a ng-bind="item.groupName" ng-click="gid.editItem('用户组编辑','user_group_prop.html',item.groupId)"></a>
+			</script>
+		</my-grid-column>
+		<my-grid-column headtext="成员人数" datafield="memberCount" width="200"></my-grid-column>
+		<my-grid-column headtext="组权限" width="200"></my-grid-column>
+		<my-grid-column headtext="说明" datafield="remark" width="200"></my-grid-column>
+		<my-grid-column headtext="状态" datafield="status" width="70"></my-grid-column>
+		<my-grid-column headtext="操作" itemrender="oper.html" width="70">
+			<script type="text/ng-template" id="oper.html">
+				<a title="编辑" href="javascript:;" ng-click="gid.editItem('用户组编辑','user_group_prop.html',item.groupId)" style="text-decoration:none">
+					<i class="Hui-iconfont">&#xe6df;</i>
+				</a>
+				<a title="删除" href="javascript:;" ng-click="gid.deleteItem(item.groupId)" class="ml-5" style="text-decoration:none">
+					<i class="Hui-iconfont">&#xe6e2;</i>
+				</a>
+			</script>
+		</my-grid-column>
+	</my-grid>
+
 </div>
 <script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>

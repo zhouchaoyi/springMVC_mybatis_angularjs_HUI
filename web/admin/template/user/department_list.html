@@ -27,7 +27,7 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 部门管理 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="pd-20">
 	<div class="text-c">
-		<input type="text" class="input-text" ng-model="searchStr" ng-keyup="searchKeyup($event)" style="width:250px" placeholder="输入部门名称" id="" name="">
+		<input type="text" class="input-text" ng-model="dg.searchStr" ng-keyup="dg.searchKeyup($event)" style="width:250px" placeholder="输入部门名称" id="" name="">
 		<button class="btn btn-success" ng-click="listItems()" name="">
 			<i class="Hui-iconfont">&#xe665;</i> 搜索
 		</button>
@@ -47,44 +47,32 @@
 			<a href="javascript:;" ng-click="doMove(-1)" class="btn btn-primary radius">
 				下移
 			</a>&nbsp;
-			<a href="javascript:;" ng-click="deleteItem()" class="btn btn-danger radius">
+			<a href="javascript:;" ng-click="dg.deleteItem()" class="btn btn-danger radius">
 				<i class="Hui-iconfont">&#xe6e2;</i> 删除
 			</a>
 		</span>
 	</div>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
-			<tr>
-				<th scope="col" colspan="9">部门列表</th>
-			</tr>
-			<tr class="text-c">
-				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-				<th width="200">部门名</th>
-				<th width="200">部门代码</th>
-				<th width="200">备注</th>
-				<th width="70">操作</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="text-c" ng-repeat="item in items">
-				<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-				<td style="text-align: left"><a ng-bind-html="item.departmentName|html" ng-click="editItem('部门编辑','department_prop.html',item.departmentId)"></a></td>
-				<td ng-bind="item.departmentKey"></td>
-				<td ng-bind="item.remark"></td>
-				<td class="f-14">
-					<a title="编辑" href="javascript:;" ng-click="editItem('部门编辑','department_prop.html',item.departmentId)" style="text-decoration:none">
-						<i class="Hui-iconfont">&#xe6df;</i>
-					</a>
-					<a title="删除" href="javascript:;" ng-click="deleteItem(item.departmentId)" class="ml-5" style="text-decoration:none">
-						<i class="Hui-iconfont">&#xe6e2;</i>
-					</a>
-				</td>
-			</tr>
-			<tr class="text-c" ng-if="gridPrompt"><td colspan="30" ng-bind="gridPromptTxt"></td></tr>
-		</tbody>
-	</table>
-	<br>
-	<div id="pagingDiv"></div>
+
+	<my-grid gid="dg">
+		<my-grid-column headtext="部门名" itemrender="name.html" width="200" align="left">
+			<script type="text/ng-template" id="name.html">
+				<a title="编辑" ng-bind-html="item.departmentName|html" ng-click="gid.editItem('部门编辑','department_prop.html',item.departmentId)" style="text-decoration:none"></a>
+			</script>
+		</my-grid-column>
+		<my-grid-column headtext="部门代码" datafield="departmentKey" width="200"></my-grid-column>
+		<my-grid-column headtext="备注" datafield="remark" width="200"></my-grid-column>
+		<my-grid-column headtext="操作" itemrender="oper.html" width="70">
+			<script type="text/ng-template" id="oper.html">
+				<a title="编辑" href="javascript:;" ng-click="gid.editItem('部门编辑','department_prop.html',item.departmentId)" style="text-decoration:none">
+					<i class="Hui-iconfont">&#xe6df;</i>
+				</a>
+				<a title="删除" href="javascript:;" ng-click="gid.deleteItem(item.departmentId)" class="ml-5" style="text-decoration:none">
+					<i class="Hui-iconfont">&#xe6e2;</i>
+				</a>
+			</script>
+		</my-grid-column>
+	</my-grid>
+
 </div>
 <script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>

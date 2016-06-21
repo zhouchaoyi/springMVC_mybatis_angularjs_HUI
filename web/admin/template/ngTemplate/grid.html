@@ -3,19 +3,19 @@
     <table class="table table-border table-bordered table-hover table-bg">
         <thead>
         <tr class="text-c">
-            <th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-            <th ng-repeat="column in columns" width="{{column.width}}">{{column.headtext}}</th>
+            <th width="25"><input type="checkbox" ng-model="gid.checkAllVal" ng-click="gid.checkAll()"></th>
+            <th ng-repeat="column in gid.columns" width="{{column.width}}">{{column.headtext}}</th>
         </tr>
         </thead>
         <tbody>
-        <tr class="text-c" ng-repeat="item in items">
-            <td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-            <td ng-repeat="column in columns">
+        <tr class="text-c" ng-repeat="item in gid.items">
+            <td><input type="checkbox" ng-model="item.checked" ng-click="gid.checkItem(item.checked)"></td>
+            <td ng-repeat="column in gid.columns" style="text-align:{{column.align}}">
                 <span ng-if="column.datafield" ng-bind-html="item[column.datafield]|html"></span>
                 <span ng-if="column.itemrender" ng-include="column.itemrender"></span>
             </td>
         </tr>
-        <tr class="text-c" ng-if="gridPrompt"><td colspan="30" ng-bind="gridPromptTxt"></td></tr>
+        <tr class="text-c" ng-if="gid.gridPrompt"><td colspan="30" ng-bind="gid.gridPromptTxt"></td></tr>
         </tbody>
     </table>
     <br>
