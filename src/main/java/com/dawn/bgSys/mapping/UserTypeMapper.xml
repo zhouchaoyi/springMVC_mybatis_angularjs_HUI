@@ -16,6 +16,7 @@
     select
     <include refid="Base_Column_List" />
     from user_type
+    where type_name like #{searchStr}
   </select>
 
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >

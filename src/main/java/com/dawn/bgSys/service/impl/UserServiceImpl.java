@@ -166,9 +166,26 @@ public class UserServiceImpl implements IUserService {
         return success;
     }
 
-    public List<UserType> listUserType() {
-        List<UserType> list = userTypeDao.listUserType();
-        return list;
+    public JSONObject listUserType(int currentPage,int pageSize,String orderByStr,String searchStr) {
+        JSONObject result=new JSONObject();
+
+        if(currentPage>0) {
+            PageHelper.startPage(currentPage, pageSize);
+        }
+        if(StringUtils.length(orderByStr)>0) {
+            PageHelper.orderBy(orderByStr);
+        }
+        searchStr="%"+searchStr+"%";
+        List<UserType> list = userTypeDao.listUserType(searchStr);
+        PageInfo page = new PageInfo(list);
+
+        result.put("items",list);
+        result.put("currentPage",page.getPageNum());
+        result.put("pageSize",page.getPageSize());
+        result.put("total",page.getTotal());
+        result.put("pages",page.getPages());
+
+        return result;
     }
 
     public JSONObject listUserByType(String userType,int currentPage,int pageSize,String orderByStr,String searchStr) {

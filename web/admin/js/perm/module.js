@@ -148,25 +148,28 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
     $scope.loadUserType=function(userTypeStr) {
         //console.log(userTypeStr);
         var param={};
+        param.currentPage=-1;
+        param.pageSize=-1;
         var url="/userMgmt/listUserType.do";
         BusinessService.post(myRootUrl + url, param).success(function (data) {
             if(null==data) {
                 return;
             }
-            for(var i=0;i<data.data.length;i++) {
+            for(var i=0;i<data.data.items.length;i++) {
+                var item = data.data.items[i];
                 if(userTypeStr) {
                     var str = "," + userTypeStr + ",";
-                    var str2 = "," + data.data[i].typeCode + ",";
+                    var str2 = "," + item.typeCode + ",";
                     if (str.indexOf(str2) != -1) {
-                        data.data[i].checked = true;
+                        item.checked = true;
                     } else {
-                        data.data[i].checked = false;
+                        item.checked = false;
                     }
                 }else {
-                    data.data[i].checked = false;
+                    item.checked = false;
                 }
             }
-            $scope.array.userType=data.data;
+            $scope.array.userType=data.data.items;
         });
     };
 

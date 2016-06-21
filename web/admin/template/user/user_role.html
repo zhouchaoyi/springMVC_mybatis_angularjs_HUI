@@ -21,7 +21,7 @@
 <![endif]-->
 <title>角色管理</title>
 </head>
-<body ng-app="myApp" ng-controller="myCtrl" ng-init="listUserType()">
+<body ng-app="myApp" ng-controller="myCtrl" ng-init="initData()">
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="pd-20">
 	<div class="cl pd-5 bg-1 bk-gray">
@@ -34,36 +34,24 @@
 			</a>
 		</span>
 	</div>
-	<table class="table table-border table-bordered table-hover table-bg">
-		<thead>
-			<tr>
-				<th scope="col" colspan="6">角色管理</th>
-			</tr>
-			<tr class="text-c">
-				<th width="25"><input type="checkbox" ng-model="checkAllVal" ng-click="checkAll()"></th>
-				<!--<th width="40">ID</th>-->
-				<th width="200">角色名</th>
-				<th width="250">描述</th>
-				<th width="50">状态</th>
-				<th width="70">操作</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="text-c" ng-repeat="item in userTypeList">
-				<td><input type="checkbox" ng-model="item.checked" ng-click="checkItem(item.checked)"></td>
-				<td ng-bind="item.typeName"></td>
-				<td ng-bind="item.remark"></td>
-				<td ng-bind="item.status==1?'启用':'禁用'" ng-class="{'1':'font_green', '0': 'font_red'}[item.status]"></td>
-				<!--<td>{{item.typeName}}</td>-->
-				<!--<td>{{item.remark}}</td>-->
-				<!--<td>{{item.status}}</td>-->
-				<td class="f-14"><a title="编辑" href="javascript:;" ng-click="roleEdit('角色编辑','user_role_prop.html',item.typeId)" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" ng-click="delUserType(item.typeId)" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
-			</tr>
-		</tbody>
-	</table>
+	<my-grid>
+		<my-grid-column headtext="角色名" itemrender="roleTypeName.html" width="200">
+			<script type="text/ng-template" id="roleTypeName.html">
+				<a href="javascript:;" ng-click="roleEdit('角色编辑','user_role_prop.html',item.typeId)">{{item.typeName}}</a>
+			</script>
+		</my-grid-column>
+		<my-grid-column headtext="描述" datafield="remark" width="250"></my-grid-column>
+		<my-grid-column headtext="状态" datafield="status" width="50"></my-grid-column>
+		<my-grid-column headtext="操作" itemrender="roleListOper.html" width="70">
+			<script type="text/ng-template" id="roleListOper.html">
+				<a title="编辑" href="javascript:;" ng-click="roleEdit('角色编辑','user_role_prop.html',item.typeId)" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" ng-click="delUserType(item.typeId)" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+			</script>
+		</my-grid-column>
+	</my-grid>
 </div>
 <script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../lib/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="../../lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="../../lib/My97DatePicker/WdatePicker.js"></script>
 <script type="text/javascript" src="../../lib/angular.min.js"></script>
 <script type="text/javascript" src="../../js/H-ui.js"></script>

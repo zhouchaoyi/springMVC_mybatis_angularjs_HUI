@@ -2,25 +2,47 @@
  * Created by Administrator on 2016/4/12.
  */
 
-app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($scope, $rootScope, BusinessService) {
+app.controller('myCtrl', ['$scope', '$rootScope','$compile', 'BusinessService', function ($scope, $rootScope,$compile, BusinessService) {
+
+    //表格的通用方法
+    $scope.loadGridData = function() {
+        BusinessService.post(myRootUrl+$scope.listUrl ,$scope.param).success(function (data) {
+           $scope.setGridData(data);
+        });
+    };
+    //表格的通用方法=================结束
+
+    //表格自定义的属性和方法
+    $scope.param={};
+    $scope.param.pageSize=10;
+    $scope.param.orderBy="";
+    $scope.listUrl="/userMgmt/listUserType.do";
+    $scope.changeGridData=function() {
+        for (var i = 0; i < $scope.items.length; i++) {
+            if($scope.items[i].status==1) {
+                $scope.items[i].status="<font color=green>启用</font>";
+            }else if($scope.items[i].status==0) {
+                $scope.items[i].status="<font color=red>禁用</font>";
+            }
+        }
+
+    };
+    //表格自定义的属性和方法=================结束
+
+    $scope.mainKey="typeId"; //删除方法需要用到,表示根据哪个字段来删除
+    $scope.deleteUrl="/userMgmt/deleteUserType.do";
+
     $scope.userType={};
     $scope.userType.id=getQueryString("type_id");
     $scope.userType.remark="";
     $scope.userType.status=false;
 
-    $scope.userTypeList={};
-    $scope.checkAllVal=false;
 
-    $scope.checkAll=function() {
-        for(var i=0;i<$scope.userTypeList.length;i++) {
-            $scope.userTypeList[i].checked=$scope.checkAllVal;
-        }
-    };
-
-    $scope.checkItem=function(checked) {
-        if(!checked) {
-            $scope.checkAllVal=false;
-        }
+    $scope.initData = function() {
+        //console.log("come in initData<<<<<<");
+        //console.log($scope);
+        //console.log($scope.listItems);
+        //$scope.listItems();
     };
 
     $scope.queryUserTypeById=function() {
@@ -33,24 +55,12 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             $scope.userType.remark = data.data.remark;
             $scope.userType.status = data.data.status==1?true:false;
         });
-    }
+    };
 
     //角色编辑页面获取角色信息
     if(null!=$scope.userType.id&&$scope.userType.id.length>0) {
         $scope.queryUserTypeById();
     }
-
-    $scope.listUserType=function() {
-        var param={};
-        BusinessService.post(myRootUrl+"/userMgmt/listUserType.do" ,param).success(function (data) {
-            //console.log(data.data);
-            $scope.userTypeList = data.data;
-            for(var i=0;i<$scope.userTypeList.length;i++) {
-                $scope.userTypeList[i].checked=false;
-            }
-        });
-    };
-
 
     $scope.submitUserTypeForm=function(isValid) {
         if(isValid) {
@@ -85,12 +95,12 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             if (null != id && id != undefined) {
                 ids = id;
             } else {
-                for(var i=0;i<$scope.userTypeList.length;i++) {
-                    if($scope.userTypeList[i].checked==true) {
+                for(var i=0;i<$scope.items.length;i++) {
+                    if($scope.items[i].checked==true) {
                         if(ids=="") {
-                            ids=ids+$scope.userTypeList[i].typeId;
+                            ids=ids+$scope.items[i].typeId;
                         }else {
-                            ids = ids + "," +$scope.userTypeList[i].typeId;
+                            ids = ids + "," +$scope.items[i].typeId;
                         }
                     }
                 }
@@ -104,7 +114,7 @@ app.controller('myCtrl', ['$scope', '$rootScope', 'BusinessService', function ($
             BusinessService.post(myRootUrl + "/userMgmt/deleteUserType.do", param).success(function (data) {
                 if (data.data > 0) {
                     alert("删除成功");
-                    $scope.listUserType();
+                    $scope.listItems();
                 }
             });
         }

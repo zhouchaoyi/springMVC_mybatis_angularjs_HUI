@@ -153,8 +153,15 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "/listUserType", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String listUserType() throws Exception {
-        List<UserType> result = this.userService.listUserType();
+    public String listUserType(@RequestBody String jsonStr) throws Exception {
+        int currentPage = WebJsonUtils.getIntValue(jsonStr, "currentPage", true);
+        int pageSize = WebJsonUtils.getIntValue(jsonStr, "pageSize", true);
+        String orderBy = WebJsonUtils.getStringValue(jsonStr, "orderBy", false);
+        String searchStr = WebJsonUtils.getStringValue(jsonStr, "searchStr", false);
+        if(StringUtils.length(orderBy)>0) {
+            orderBy=Utils.transOrderByStr(orderBy);
+        }
+        JSONObject result = this.userService.listUserType(currentPage,pageSize,orderBy,searchStr);
         JSONObject json = new JSONObject();
         json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));

@@ -62,7 +62,7 @@ public class PermServiceImpl implements IPermService {
 
         Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
         //code转换成中文字
-        List<UserType> listUserType = userTypeDao.listUserType();
+        List<UserType> listUserType = userTypeDao.listUserType("%%");
         Map<String,String> map = new HashMap<String,String>();
         for(UserType userType : listUserType) {
             map.put(userType.getTypeCode(),userType.getTypeName());
@@ -109,7 +109,7 @@ public class PermServiceImpl implements IPermService {
         }
 
         //code转换成中文字
-        List<UserType> listUserType = userTypeDao.listUserType();
+        List<UserType> listUserType = userTypeDao.listUserType("%%");
         Map<String,String> map = new HashMap<String,String>();
         for(UserType userType : listUserType) {
             map.put(userType.getTypeCode(),userType.getTypeName());
@@ -152,7 +152,7 @@ public class PermServiceImpl implements IPermService {
             list = moduleDao.select(searchStr, status, parentClassId + "%", parentClassId);
 
             //code转换成中文字
-            List<UserType> listUserType = userTypeDao.listUserType();
+            List<UserType> listUserType = userTypeDao.listUserType("%%");
             Map<String, String> map = new HashMap<String, String>();
             for (UserType userType : listUserType) {
                 map.put(userType.getTypeCode(), userType.getTypeName());
@@ -250,7 +250,7 @@ public class PermServiceImpl implements IPermService {
         }
 
         //code转换成中文字
-        List<UserType> listUserType = userTypeDao.listUserType();
+        List<UserType> listUserType = userTypeDao.listUserType("%%");
         Map<String,String> map = new HashMap<String,String>();
         for(UserType userType : listUserType) {
             map.put(userType.getTypeCode(),userType.getTypeName());

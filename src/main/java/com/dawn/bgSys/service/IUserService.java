@@ -37,7 +37,7 @@ public interface IUserService {
 
     public int deleteUser(List<String> ids);
 
-    public List<UserType> listUserType();
+    public JSONObject listUserType(int currentPage,int pageSize,String orderBy,String searchStr);
 
     public JSONObject listUserByType(String userType,int currentPage,int pageSize,String orderBy,String searchStr);
 

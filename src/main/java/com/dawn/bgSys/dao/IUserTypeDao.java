@@ -19,5 +19,5 @@ public interface IUserTypeDao {
 
     int updateByPrimaryKey(UserType record);
 
-    List<UserType> listUserType();
+    List<UserType> listUserType(String searchStr);
 }
