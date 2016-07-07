@@ -90,7 +90,8 @@ h4{line-height:30px}
 		Explain:页脚
 		Last Modify:	jackying
 	*/
-	.footer{border-top:1px solid #E8E8E8;margin-top:20px; padding:15px;font-family:tahoma,Arial;font-size:12px;color:#999;line-height:22px;text-align:center;position:fixed; bottom:0; left:0;width:100%;}
+	/*.footer{border-top:1px solid #E8E8E8;margin-top:20px; padding:15px;font-family:tahoma,Arial;font-size:12px;color:#999;line-height:22px;text-align:center;position:fixed; bottom:0; left:0;width:100%;}*/
+	.footer{border-top:1px solid #E8E8E8;padding-top:3px;font-family:tahoma,Arial;font-size:12px;color:gray;line-height:22px;text-align:center;position:fixed; bottom:0; left:0;width:100%;}
 	.footer a,.footer a:hover{color:#999}
 /*横向手机 竖向平板*/
 @media (max-width: 767px) {

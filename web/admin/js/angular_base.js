@@ -114,6 +114,7 @@ app.directive("myGrid",function($compile){
            $scope.gid.listItems=function() {
                $scope.gid.gridPrompt=true;
                $scope.gid.gridPromptTxt="数据加载中......";
+               $scope.gid.checkAllVal=false;
                $scope.gid.param.currentPage=$scope.gid.param.currentPage?$scope.gid.param.currentPage:1;
                $scope.gid.param.pageSize=$scope.gid.param.pageSize?$scope.gid.param.pageSize:10;
                $scope.gid.param.orderBy=$scope.gid.param.orderBy?$scope.gid.param.orderBy:"";

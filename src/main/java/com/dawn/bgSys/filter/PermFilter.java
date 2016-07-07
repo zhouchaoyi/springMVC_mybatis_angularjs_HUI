@@ -24,7 +24,7 @@ import java.util.Map;
  * Date: 13-9-26
  * Time: 下午1:38
  */
-//暂时没有用到<<<<<<<<<<<<<<<<<<<<<
+//暂时没有用到，权限过滤写在LoginFilter中了<<<<<<<<<<<<<<<<<<<<<
 public class PermFilter extends BaseFilter {
 
     private Logger logger= Logger.getLogger(PermFilter.class);
