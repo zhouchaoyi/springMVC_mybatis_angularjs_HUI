@@ -453,11 +453,13 @@ public class PermServiceImpl implements IPermService {
                 }
                 Map itemMap = new HashMap();
                 itemMap.put("itemName",map.get("itemName").toString());
+                itemMap.put("itemId",map.get("itemId").toString());
                 itemMap.put("level","1");
                 list.add(itemMap);
             }else {
                 Map itemMap = new HashMap();
                 itemMap.put("itemName",map.get("itemName").toString());
+                itemMap.put("itemId",map.get("itemId").toString());
                 if(StringUtils.length(map.get("classId").toString())==20) {
                     itemMap.put("level", "2");
                 }else {

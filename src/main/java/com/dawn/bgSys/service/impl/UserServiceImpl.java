@@ -59,6 +59,7 @@ public class UserServiceImpl implements IUserService {
         User user=userDao.selectUserByNameAndPass(loginName, password);
         if(null==user) {
             throw new OperateFailureException("登录名或密码错误");
+            //throw new OperateFailureException("error name");
         }
         Date loginDate=null;
         if(user.getLoginDate()==null) {

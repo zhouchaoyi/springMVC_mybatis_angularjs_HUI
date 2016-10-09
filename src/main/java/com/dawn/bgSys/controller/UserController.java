@@ -47,7 +47,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/login", produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String login(@RequestBody String jsonStr) throws Exception {
-
+        System.out.println("coming login<<<<<<<"+jsonStr);
         String loginName = WebJsonUtils.getStringValue(jsonStr, "loginName", true);
         String password = WebJsonUtils.getStringValue(jsonStr, "password", true);
 
@@ -56,6 +56,7 @@ public class UserController extends BaseController {
         JSONObject json = new JSONObject();
         json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));
+        System.out.println(json.toString());
         return json.toString();
     }
 

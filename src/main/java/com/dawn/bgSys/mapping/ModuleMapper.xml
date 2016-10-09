@@ -138,7 +138,7 @@
   </select>
 
   <select id="selectMenu" resultType="hashmap" >
-    select distinct i.class_id classId,i.item_name itemName,j.url
+    select distinct i.class_id classId,i.item_name itemName,i.item_id itemId,j.url
     from control_panel i
     left join module_info j on i.module_id=j.module_id
     inner join (select a.class_id

@@ -338,6 +338,7 @@ public class PermController extends BaseController {
         JSONObject json = new JSONObject();
         json.put("data", result);
         json.put("status", Utils.getSubStatus("获取数据成功！"));
+        //System.out.println(json.toString());
         return json.toString();
     }
 }
