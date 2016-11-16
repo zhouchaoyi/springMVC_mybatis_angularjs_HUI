@@ -34,10 +34,11 @@
   </select>
 
   <select id="selectMemberCount" resultType="hashmap">
-    select a.group_id as groupId,count(b.user_id) as memberCount
+    select a.group_id as groupId,count(c.user_id) as memberCount
     from user_group a
     left join user_group_relation b on a.group_id=b.user_group_id
-    where a.group_id in
+    left join user_info c on b.user_id=c.user_id
+    where c.user_id is not null and a.group_id in
     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
       #{item}
     </foreach>

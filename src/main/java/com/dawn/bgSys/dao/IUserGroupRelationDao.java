@@ -17,6 +17,8 @@ public interface IUserGroupRelationDao {
 
     int deleteByUserId(@Param("list")List<String> ids,@Param("userId")String userId);
 
+    int deleteForUserId(@Param("list")List<String> userIds);
+
     List<Map> selectUserJoinGroup(@Param("userId")String userId,@Param("searchStr")String searchStr);
 
     List<Map> selectGroupByUserId(List<String> ids);

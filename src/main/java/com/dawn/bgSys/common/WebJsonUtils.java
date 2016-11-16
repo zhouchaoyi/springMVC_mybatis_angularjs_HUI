@@ -1,13 +1,12 @@
 package com.dawn.bgSys.common;
 
 
-import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.dawn.bgSys.common.password.Base64Utils;
 import com.dawn.bgSys.exception.OperateFailureException;
 import com.dawn.bgSys.exception.ParamCheckException;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 
@@ -84,7 +83,7 @@ public class WebJsonUtils {
      * @param notNull
      */
     private static void checkValue(String paramName, String paramValue, boolean notNull) throws ParamCheckException {
-        if (notNull && paramValue == null) {
+        if (notNull && StringUtils.length(paramValue)==0) {
             throw new ParamCheckException("请传递参数：" + paramName);
         }
     }

@@ -12,6 +12,7 @@ var app = angular.module("myApp",[]).config(function($httpProvider) {
             if (null != getCookie("token")) {
                 data.token = getCookie("token");
             }
+            //console.log(data.token);
             var jsonStr = JSON.stringify(data);
             return jsonStr;
         }

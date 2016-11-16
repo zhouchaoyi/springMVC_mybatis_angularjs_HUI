@@ -82,12 +82,20 @@ public class PermServiceImpl implements IPermService {
     public JSONObject updateModule(Module module) {
         //验证代码是否重复
         checkRepeatCode(module);
+        Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
+
+        if(module.getParentId()!=-1) {
+            String parentClassId= moduleDao.selectByPrimaryKey(module.getParentId()).getClassId();
+            //System.out.println("class_id="+parentClassId);
+            if (parentClassId.indexOf(result.getClassId()) == 0) {
+                throw new OperateFailureException("不能选择子节点或自己作为父节点！请重新选择。");
+            }
+        }
+
         moduleDao.updateByPrimaryKeySelective(module);
         treeModel.setsTableName("module_info");
         treeModel.setsIdField("module_id");
         treeModel.resetClassId(module.getModuleId()+"");
-
-        Module result = moduleDao.selectByPrimaryKey(module.getModuleId());
 
         String hasDiffStatusChild="0"; //是否有不同状态的子节点，如果有，前端需要重新加载子节点
         if(StringUtils.equals("1",result.getIsParent())) {

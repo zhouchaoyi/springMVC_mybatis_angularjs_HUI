@@ -89,4 +89,12 @@
     </foreach>
     and user_id=#{userId}
   </delete>
+
+  <delete id="deleteForUserId" >
+    delete from user_group_relation
+    where user_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
 </mapper>

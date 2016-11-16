@@ -164,6 +164,7 @@ public class UserServiceImpl implements IUserService {
     public int deleteUser(List<String> ids) {
         int success=0;
         success=userDao.deleteByPrimaryKey(ids);
+        success=userGroupRelationDao.deleteForUserId(ids);
         return success;
     }
 
@@ -206,7 +207,10 @@ public class UserServiceImpl implements IUserService {
             String id = user.getUserId();
             ids.add(id);
         }
-        List<User> list2 = userDao.selectByUserIds(ids);
+        List<User> list2 = new ArrayList<User>();
+        if(ids.size()>0) {
+            list2 = userDao.selectByUserIds(ids);
+        }
 
         PageInfo page = new PageInfo(list);
 
@@ -316,24 +320,31 @@ public class UserServiceImpl implements IUserService {
 
         List<String> ids = new ArrayList<String>();
         List<JSONObject> listObj = new ArrayList<JSONObject>();
-        for(UserGroup userGroup : list) {
-            String id = userGroup.getGroupId()+"";
-            ids.add(id);
-            String jsonStr= JSON.toJSONString(userGroup);
-            JSONObject json=JSONObject.parseObject(jsonStr);
-            listObj.add(json);
-        }
-        List<Map> listCount = userGroupDao.selectMemberCount(ids);
-        for(JSONObject json : listObj) {
-            for(Map map : listCount) {
-                if(StringUtils.equals(json.getString("groupId"), map.get("groupId").toString())) {
-                    json.put("memberCount",map.get("memberCount").toString());
-                    break;
+        if(null!=list && list.size()>0) {
+            for (UserGroup userGroup : list) {
+                String id = userGroup.getGroupId() + "";
+                ids.add(id);
+                String jsonStr = JSON.toJSONString(userGroup);
+                JSONObject json = JSONObject.parseObject(jsonStr);
+                listObj.add(json);
+            }
+            List<Map> listCount = userGroupDao.selectMemberCount(ids);
+            for (JSONObject json : listObj) {
+                for (Map map : listCount) {
+                    if (StringUtils.equals(json.getString("groupId"), map.get("groupId").toString())) {
+                        //System.out.println("memberCount="+map.get("memberCount").toString()+"<<<<<<<<<<<");
+                        String memberCount = map.get("memberCount").toString();
+                        if(null==memberCount || memberCount.length()==0) {
+                            memberCount="0";
+                        }
+                        json.put("memberCount", memberCount);
+                        break;
+                    }
                 }
             }
         }
 
-        PageInfo page = new PageInfo(listObj);
+        PageInfo page = new PageInfo(list);
 
         result.put("items",listObj);
         result.put("currentPage",page.getPageNum());
